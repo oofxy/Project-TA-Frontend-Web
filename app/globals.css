@@ -114,6 +114,32 @@
 
 @layer base {
   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-[#F4F8F7] text-[#333333];
+  }
+}
+
+@layer {
+  .login-form{
+    @apply flex flex-col w-[20rem] h-fit gap-10
+  }
+  .login-header{
+    @apply font-bold text-4xl
+  }
+  .login-btn{
+    @apply h-12 text-[18px] bg-[#03624C] hover:bg-[#03624C]/80
+  }
+  .icon{
+    @apply w-[20px] h-[20px] text-[#616161] hover:cursor-pointer
+  }
+}
+
+@layer base {
+  * {
     @apply border-border outline-ring/50;
   }
   body {
