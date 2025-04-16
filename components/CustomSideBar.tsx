@@ -24,7 +24,7 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 
-const AdminSideBar = () => {
+const CustomSideBar = () => {
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
@@ -127,4 +127,4 @@ const AdminSideBar = () => {
   );
 };
 
-export default AdminSideBar;
+export default CustomSideBar;
