@@ -1,8 +1,6 @@
-import { TableData } from "@/components/TableData";
 import { DataKaryawan } from "@/types";
-import { dataKaryawan } from "../data-karyawan/columns";
 
-async function getData(): Promise<DataKaryawan[]> {
+export async function getDataKaryawan(): Promise<DataKaryawan[]> {
   // Fetch data from your API here.
   return [
     {
@@ -43,14 +41,4 @@ async function getData(): Promise<DataKaryawan[]> {
     },
     // ...
   ];
-}
-
-export default async function Table() {
-  const data = await getData();
-
-  return (
-    <div className="flex flex-col h-full justify-between">
-      <TableData columns={dataKaryawan} data={data} />
-    </div>
-  );
 }

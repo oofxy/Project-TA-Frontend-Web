@@ -24,7 +24,6 @@ export const dataRegisterUser: ColumnDef<DataRegisterUser>[] = [
       <div className="flex flex-row gap-2">
         <Trash2 />
         <UserPen />
-        <Ellipsis />
       </div>
     ),
   },

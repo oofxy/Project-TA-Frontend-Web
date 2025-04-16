@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import List from "@/components/ui/list";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from "@/components/ui/pagination";
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,22 +20,21 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ArrowRight } from "lucide-react";
-
-const izinData = [
-  {
-    nama: "John Doe",
-    kepentingan: "Acara",
-    tanggal: "17 Mar 2025 - 19 Mar 2025",
-    deskripsi:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla auctor sed nibh ut consectetur. Maecenas purus ante, mattis ut dictum sed, pretium et nunc. Maecenas viverra id neque vel tristique.",
-  },
-];
+import { izinData } from "@/data/izin";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const IzinPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIzin, setSelectedIzin] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const pathname = usePathname();
+  const limit = 7;
+  const totalPages = Math.ceil(izinData.length / limit);
+
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+
+  const pageLink = (index: number) => `${pathname}?page=${index}`;
 
   const filteredIzin = izinData.filter((izin) =>
     izin.nama.toLowerCase().includes(searchTerm.toLowerCase())
@@ -46,49 +45,54 @@ const IzinPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const paginatedIzin = filteredIzin.slice(
+    (currentPage - 1) * limit,
+    currentPage * limit
+  );
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Izin List */}
-      {filteredIzin.map((izin, index) => (
-        <div
-          key={index}
-          className="cursor-pointer"
-          onClick={() => handleOpenModal(izin)}
-        >
-          <List
-            nama={izin.nama}
-            kepentingan={izin.kepentingan}
-            tanggal={izin.tanggal}
-          />
-        </div>
-      ))}
+    <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6 flex flex-col justify-between">
+      <div className="flex flex-col gap-2">
+        {paginatedIzin.map((izin, index) => (
+          <a onClick={() => handleOpenModal(izin)} key={index}>
+            <List
+              nama={izin.nama}
+              kepentingan={izin.kepentingan}
+              tanggal={izin.tanggal}
+            />
+          </a>
+        ))}
+      </div>
 
       {/* Custom Pagination */}
-      <div className="mt-4 bg-white p-3 rounded-lg shadow-md border border-gray-300">
       <Pagination>
-      <PaginationContent>
-        <p>
-          Page
-        </p>
-        <PaginationItem>
-          <PaginationPrevious href="#" />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext href="#" />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-      </div>
+        <PaginationContent>
+          <p className="mr-2">Page</p>
+          <PaginationItem hidden={currentPage === 1}>
+            <PaginationPrevious href={pageLink(currentPage - 1)} />
+          </PaginationItem>
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                href={pageLink(index + 1)}
+                isActive={currentPage === index + 1}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem hidden={currentPage >= totalPages}>
+            <PaginationNext href={pageLink(currentPage + 1)} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
 
       {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>

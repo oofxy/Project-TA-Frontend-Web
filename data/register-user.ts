@@ -1,9 +1,6 @@
-import { TableData } from "@/components/TableData";
-import { DataKaryawan, DataRegisterUser } from "@/types";
-import { dataKaryawan } from "../data-karyawan/columns";
-import { dataRegisterUser } from "./columns";
+import { DataRegisterUser } from "@/types";
 
-async function getData(): Promise<DataRegisterUser[]> {
+export async function getRegisterUser(): Promise<DataRegisterUser[]> {
   // Fetch data from your API here.
   return [
     {
@@ -36,14 +33,4 @@ async function getData(): Promise<DataRegisterUser[]> {
     },
     // ...
   ];
-}
-
-export default async function Table() {
-  const data = await getData();
-
-  return (
-    <div className="flex flex-col h-full justify-between">
-      <TableData columns={dataRegisterUser} data={data} />
-    </div>
-  );
 }

@@ -1,12 +1,14 @@
 import React from "react";
-import Table from "./table";
+import { getDataKaryawan } from "@/data/data-karyawan";
+import { TableData } from "@/components/TableData";
+import { dataKaryawan } from "./columns";
 
-const DataKaryawan = () => {
+export default async function DataKaryawan() {
+  const data = await getDataKaryawan();
+
   return (
     <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
-      <Table />
+      <TableData columns={dataKaryawan} data={data} />
     </div>
   );
 };
-
-export default DataKaryawan;

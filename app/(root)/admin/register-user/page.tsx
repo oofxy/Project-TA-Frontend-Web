@@ -1,13 +1,13 @@
-import React from "react";
-import Table from "./table";
 import { dataRegisterUser } from "./columns";
+import { TableData } from "@/components/TableData";
+import { getRegisterUser } from "@/data/register-user";
 
-const DataRegisterUser = () => {
+export default async function DataRegisterUser() {
+  const data = await getRegisterUser();
+
   return (
     <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
-      <Table />
+      <TableData columns={dataRegisterUser} data={data} />
     </div>
   );
-};
-
-export default DataRegisterUser;
+}
