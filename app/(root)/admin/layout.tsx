@@ -14,9 +14,7 @@ const layout = ({
         <CustomSideBar />
         <div className="flex flex-col flex-1">
           <Header />
-          <main className="flex-1 p-4">
-            {children}
-          </main>
+          <main className="flex-1 p-4">{children}</main>
         </div>
       </div>
     </SidebarProvider>
