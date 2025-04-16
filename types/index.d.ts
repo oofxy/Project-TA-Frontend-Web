@@ -35,67 +35,67 @@ declare interface TableDataProps<TData, TValue> {
   
   export type Kelurahan ={
     id: string
-    pendidikan: string
+    kelurahan: string
   }
   
   export type Kecamatan ={
     id: string
-    pendidikan: string
+    kecamatan: string
   }
   
   export type Kabupaten ={
     id: string
-    pendidikan: string
+    kabupaten: string
   }
   
   export type Provinsi ={
     id: string
-    pendidikan: string
+    provinsi: string
   }
   
   export type Jabatan ={
     id: string
-    pendidikan: string
+    jabatan: string
   }
   
   export type Pekerjaan ={
     id: string
-    pendidikan: string
+    pekerjaan: string
   }
   
   export type Golongan ={
     id: string
-    pendidikan: string
+    golongan: string
   }
   
   export type StatusAbsensi ={
     id: string
-    pendidikan: string
+    statusAbsensi: string
   }
   
   export type Divisi ={
     id: string
-    pendidikan: string
+    divisi: string
   }
   
   export type LokasiKantor ={
     id: string
-    pendidikan: string
+    lokasiKantor: string
   }
   
   export type LokasiKerja ={
     id: string
-    pendidikan: string
+    lokasiKerja: string
   }
   
   export type JenisIzin ={
     id: string
-    pendidikan: string
+    jenisIzin: string
   }
   
   export type JenisKelamin ={
     id: string
-    pendidikan: string
+    jenisKelamin: string
   }
   
   declare interface TextFieldProps {
