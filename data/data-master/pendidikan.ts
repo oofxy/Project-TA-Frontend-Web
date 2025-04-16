@@ -1,11 +1,27 @@
 import { Pendidikan } from "@/types";
 
 export async function getPendidikan(): Promise<Pendidikan[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "1",
-      pendidikan: "Testing",
+  const res = await fetch(`${process.env.API_URL}pendidikan`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer 1|6WybpTmcoAVYaskaDbVInGxO43bCr6iCl5o16lr5dec6dd56`,
     },
-  ];
+  });
+
+  // Check for a bad response
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Error response:", errorText);
+    throw new Error(`Failed to fetch Pendidikan: ${res.status}`);
+  }
+
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON, got:", text);
+    throw new Error("Invalid content type: " + contentType);
+  }
+
+  const data = await res.json();
+  return data;
 }

@@ -6,7 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 
 export const jenisIzin: ColumnDef<JenisIzin>[] = [
   {
-    accessorKey: "jenisIzin",
+    accessorKey: "name",
     header: "Jenis Izin",
   },
   {

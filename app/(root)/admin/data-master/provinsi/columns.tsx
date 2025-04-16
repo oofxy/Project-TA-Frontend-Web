@@ -6,7 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 
 export const provinsi: ColumnDef<Provinsi>[] = [
   {
-    accessorKey: "provinsi",
+    accessorKey: "name",
     header: "Provinsi",
   },
   {

@@ -6,7 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 
 export const divisi: ColumnDef<Divisi>[] = [
   {
-    accessorKey: "divisi",
+    accessorKey: "name",
     header: "Divisi",
   },
   {

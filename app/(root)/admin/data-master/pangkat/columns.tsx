@@ -6,7 +6,7 @@ import { Edit2, Trash2 } from "lucide-react";
 
 export const pangkat: ColumnDef<Pangkat>[] = [
   {
-    accessorKey: "pangkat",
+    accessorKey: "name",
     header: "Pangkat",
   },
   {
