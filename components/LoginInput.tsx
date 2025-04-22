@@ -10,7 +10,7 @@ import { Input } from "./ui/input";
 
 import { Control } from "react-hook-form";
 import { z } from "zod";
-import { authFormSchema } from "@/lib/utils";
+import { authFormSchema } from "@/lib/zod";
 
 interface LoginInput {
   control: Control<z.infer<typeof authFormSchema>>;
@@ -38,6 +38,7 @@ const LoginInput = ({
             <Input
               type={type}
               placeholder={placeholder}
+              autoComplete="off"
               {...field}
               className="h-12"
             />
