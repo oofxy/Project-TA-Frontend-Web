@@ -122,3 +122,7 @@ export type DataRegisterUser = {
     className: string;
     type: React.HTMLInputTypeAttribute | undefined;
   }
+
+  export interface FormErrors {
+    [key: string]: string | undefined;
+  }
