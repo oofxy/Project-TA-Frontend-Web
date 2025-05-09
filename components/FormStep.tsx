@@ -12,7 +12,10 @@ export default function FormStep() {
       {formStepLinks.map((item) => {
         const isActive = pathname === item.route;
         return (
-          <div key={item.label} className="flex items-center gap-2 z-10 bg-white">
+          <div
+            key={item.label}
+            className="flex items-center gap-2 z-10 w-fit bg-white"
+          >
             <Link
               href={item.route}
               className={`flex justify-center items-center h-10 w-10 rounded-full ${
@@ -26,7 +29,9 @@ export default function FormStep() {
             {isActive ? (
               <div>
                 <p className="text-[14px] text-[#17876E]">{item.step}</p>
-                <h1 className="font-semibold">{item.label}</h1>
+                <h1 className="font-semibold line-clamp-1 md:overflow-ellipsis">
+                  {item.label}
+                </h1>
               </div>
             ) : (
               ""
@@ -34,7 +39,7 @@ export default function FormStep() {
           </div>
         );
       })}
-      <div className="absolute border bg-black w-60 z-0"/>
+      <div className="absolute border bg-black w-60 z-0" />
     </div>
   );
 }

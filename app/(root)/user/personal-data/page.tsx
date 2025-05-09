@@ -62,6 +62,12 @@ const fields: {
     type: "text",
     placeholder: "Masukan Alamat",
   },
+  {
+    name: "npwp",
+    label: "NPWP",
+    type: "text",
+    placeholder: "Masukan NPWP",
+  },
 ];
 
 const initialState: FormErrors = {};
@@ -94,6 +100,7 @@ export default function Personal() {
       tempat_lahir: newFormData.tempat_lahir || "",
       tanggal_lahir: newFormData.tanggal_lahir || "",
       alamat: newFormData.alamat || "",
+      npwp: newFormData.npwp || "",
     },
   });
   return (

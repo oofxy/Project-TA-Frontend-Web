@@ -23,6 +23,7 @@ const defaultForm: NewFormInitialValuesType = {
   tempat_lahir: "",
   tanggal_lahir: "",
   alamat: "",
+  npwp: "",
   nama_pasangan: "",
   tempat_lahir_pasangan: "",
   pekerjaan_pasangan: "",

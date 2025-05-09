@@ -21,6 +21,7 @@ export const personalSchema = z.object({
   tempat_lahir: z.string().min(1, "Tempat lahir tidak boleh kosong"),
   tanggal_lahir: z.string().min(1, "Tanggal lahir tidak boleh kosong"),
   alamat: z.string().min(1, "Alamat tidak boleh kosong"),
+  npwp: z.string().min(1, "NPWP tidak boleh kosong"),
 });
 
 export const partnerSchema = z.object({
@@ -74,6 +75,7 @@ export const newFormInitialValuesSchema = z.object({
   tempat_lahir: z.string().optional(),
   tanggal_lahir: z.string().optional(),
   alamat: z.string().optional(),
+  npwp: z.string().optional(),
   nama_pasangan: z.string().optional(),
   tempat_lahir_pasangan: z.string().optional(),
   pekerjaan_pasangan: z.string().optional(),

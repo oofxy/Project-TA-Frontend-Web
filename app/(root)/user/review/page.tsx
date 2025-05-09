@@ -67,10 +67,10 @@ export default function Review() {
         ))}
         {newFormData.children?.map((anak, index) => (
           <div key={index}>
-            <div className="">Nama Anak: {anak.nama_anak}</div>
-            <div className="">NIK Anak: {anak.nik_anak}</div>
-            <div className="">Tempat Lahir Anak: {anak.tempat_lahir_anak}</div>
-            <div className="">Tanggal Lahir Anak: {anak.tanggal_lahir_anak}</div>
+            <div>Nama Anak: {anak.nama_anak}</div>
+            <div>NIK Anak: {anak.nik_anak}</div>
+            <div>Tempat Lahir Anak: {anak.tempat_lahir_anak}</div>
+            <div>Tanggal Lahir Anak: {anak.tanggal_lahir_anak}</div>
           </div>
         ))}
       </div>
