@@ -1,44 +1,28 @@
 import { DataKaryawan } from "@/types";
 
 export async function getDataKaryawan(): Promise<DataKaryawan[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: 1,
-      nama: "John Doe",
-      email: "john.doe@example.com",
-      telepon: "08123456789",
-      alamat: "Jl. Sudirman No. 1, Jakarta",
-      agama: "Islam",
-      edit: "",
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
-    {
-      id: 2,
-      nama: "Jane Doe",
-      email: "jane.doe@example.com",
-      telepon: "08129876543",
-      alamat: "Jl. Gatot Subroto No. 2, Jakarta",
-      agama: "Kristen",
-      edit: "",
-    },
-    {
-      id: 3,
-      nama: "James Sul",
-      email: "james.sul@example.com",
-      telepon: "081211122233",
-      alamat: "Jl. Asia Afrika No. 3, Bandung",
-      agama: "Hindu",
-      edit: "",
-    },
-    {
-      id: 4,
-      nama: "Mike Wazo",
-      email: "mike.wazo@example.com",
-      telepon: "081211122233",
-      alamat: "Jl. Jepan Pakis No. 3, Malang",
-      agama: "Protestan",
-      edit: "",
-    },
-    // ...
-  ];
+  });
+
+  // Check for a bad response
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Error response:", errorText);
+    throw new Error(`Failed to fetch User: ${res.status}`);
+  }
+
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON, got:", text);
+    throw new Error("Invalid content type: " + contentType);
+  }
+
+  const data = await res.json();
+  return data;
 }

@@ -2,11 +2,11 @@
 
 import { DataKaryawan } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Trash2, UserPen } from "lucide-react";
+import { Ellipsis, UserMinus, UserPen } from "lucide-react";
 
 export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
   {
-    accessorKey: "nama",
+    accessorKey: "name",
     header: "Nama",
   },
   {
@@ -14,7 +14,7 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
     header: "Email",
   },
   {
-    accessorKey: "telepon",
+    accessorKey: "telephone",
     header: "Telepon",
   },
   {
@@ -22,18 +22,29 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
     header: "Alamat",
   },
   {
-    accessorKey: "agama",
-    header: "Agama",
-  },
-  {
     accessorKey: "edit",
     header: "Edit",
-    cell: ({ row }) => (
-      <div className="flex flex-row gap-2">
-        <Trash2 />
-        <UserPen />
-        <Ellipsis />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const handleMoreData = () => {
+        const data = row.original;
+        console.log("Data Karyawan:", data);
+      };
+      return (
+        <div className="flex flex-row gap-2">
+          <UserMinus
+            className="cursor-pointer hover:text-red-700"
+            onClick={() => {}}
+          />
+          <UserPen
+            className="cursor-pointer hover:text-yellow-700"
+            onClick={() => {}}
+          />
+          <Ellipsis
+            className="cursor-pointer hover:text-green-700"
+            onClick={handleMoreData}
+          />
+        </div>
+      );
+    },
   },
 ];
