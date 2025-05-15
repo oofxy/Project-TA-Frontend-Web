@@ -12,7 +12,7 @@ export default function Review() {
   const { newFormData, resetData } = useFormContext();
   const router = useRouter();
 
-  const formFields = [
+  const personalFormFields = [
     { label: "Nama", value: newFormData.nama },
     { label: "NIP", value: newFormData.nip },
     { label: "NIK", value: newFormData.nik },
@@ -21,6 +21,9 @@ export default function Review() {
     { label: "Tempat Lahir", value: newFormData.tempat_lahir },
     { label: "Tanggal Lahir", value: newFormData.tanggal_lahir },
     { label: "Alamat", value: newFormData.alamat },
+  ];
+
+  const partnerFormFields = [
     { label: "Nama Pasangan", value: newFormData.nama_pasangan },
     {
       label: "Tempat Lahir Pasangan",
@@ -28,10 +31,20 @@ export default function Review() {
     },
     { label: "Pekerjaan Pasangan", value: newFormData.pekerjaan_pasangan },
     { label: "Telepon Pasangan", value: newFormData.telephone_pasangan },
+  ];
+
+  const parentFormFields = [
     { label: "Nama Ayah", value: newFormData.nama_ayah },
     { label: "Nama Ibu", value: newFormData.nama_ibu },
     { label: "Alamat Ayah", value: newFormData.alamat_ayah },
     { label: "Alamat Ibu", value: newFormData.alamat_ibu },
+  ];
+
+  const childrenFormFields = [
+    { label: "Nama Anak", value: newFormData.nama_anak },
+    { label: "NIK Anak", value: newFormData.nik_anak },
+    { label: "Tempat Lahir Anak", value: newFormData.tempat_lahir_anak },
+    { label: "Tanggal Lahir Anak", value: newFormData.tanggal_lahir_anak },
   ];
 
   const handleFormSubmit = async (formData: FormData) => {
@@ -55,26 +68,66 @@ export default function Review() {
       action={handleFormSubmit}
       className="flex flex-col md:items-end justify-center w-full"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-2xl">
-        {formFields.map((field, index) => (
-          <div
-            key={index}
-            className="flex flex-col bg-green-50 border border-green-100 p-2 rounded"
-          >
-            <h1 className="text-[14px]">{field.label}</h1>
-            <p className="font-semibold text-[18px]">{field.value || "-"}</p>
+      <div className="columns-1 md:columns-2 gap-4 space-y-4 w-2xl">
+        <div className="flex flex-col gap-2 break-inside-avoid">
+          <h1 className="font-semibold text-[20px]">Data Pribadi</h1>
+          <div className="flex flex-col gap-2 border p-4 rounded-lg bg-accent">
+            {personalFormFields.map((field, index) => (
+              <div key={index} className="flex gap-2">
+                <label className="font-normal">{field.label}:</label>
+                <p className="font-semibold">{field.value}</p>
+              </div>
+            ))}
           </div>
-        ))}
-        {newFormData.children?.map((anak, index) => (
-          <div key={index}>
-            <div>Nama Anak: {anak.nama_anak}</div>
-            <div>NIK Anak: {anak.nik_anak}</div>
-            <div>Tempat Lahir Anak: {anak.tempat_lahir_anak}</div>
-            <div>Tanggal Lahir Anak: {anak.tanggal_lahir_anak}</div>
+        </div>
+        <div className="flex flex-col gap-2 break-inside-avoid">
+          <h1 className="font-semibold text-[20px]">Data Pasangan</h1>
+          <div className="flex flex-col gap-2 border p-4 rounded-lg bg-accent">
+            {partnerFormFields.map((field, index) => (
+              <div key={index} className="flex gap-2">
+                <label className="font-normal">{field.label}:</label>
+                <p className="font-semibold">{field.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 break-inside-avoid">
+          <h1 className="font-semibold text-[20px]">Data Orang tua</h1>
+          <div className="flex flex-col gap-2 border p-4 rounded-lg bg-accent">
+            {parentFormFields.map((field, index) => (
+              <div key={index} className="flex gap-2">
+                <label className="font-normal">{field.label}:</label>
+                <p className="font-semibold">{field.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {newFormData.children?.map((child, index) => (
+          <div key={index} className="flex flex-col gap-2 break-inside-avoid">
+            <h1 className="font-semibold text-[20px]">Data Anak {index + 1}</h1>
+            <div className="flex flex-col gap-2 border p-4 rounded-lg bg-accent mb-4">
+              <div className="flex gap-2">
+                <label className="font-normal">Nama Anak:</label>
+                <p className="font-semibold">{child.nama_anak}</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="font-normal">NIK Anak:</label>
+                <p className="font-semibold">{child.nik_anak}</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="font-normal">Tempat Lahir Anak:</label>
+                <p className="font-semibold">{child.tempat_lahir_anak}</p>
+              </div>
+              <div className="flex gap-2">
+                <label className="font-normal">Tanggal Lahir Anak:</label>
+                <p className="font-semibold">{child.tanggal_lahir_anak}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
-      <Button className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4">
+      <Button className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4 h-10 w-30">
         Submit
       </Button>
     </form>

@@ -147,7 +147,7 @@ export default function Personal() {
           <div className="flex justify-end">
             <Button
               type="submit"
-              className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4"
+              className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4 h-10 w-30"
             >
               Next
             </Button>

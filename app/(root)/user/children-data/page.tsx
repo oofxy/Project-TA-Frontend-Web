@@ -86,7 +86,7 @@ export default function Children() {
       formState[fieldName] = undefined;
     }
   };
-  
+
   const form = useForm<ChildForm>({
     resolver: zodResolver(childSchema),
     defaultValues: {
@@ -107,11 +107,13 @@ export default function Children() {
   return (
     <div className="w-full p-5">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" onClick={openDialog}>
-            Tambah Data Anak
-          </Button>
-        </DialogTrigger>
+        <div className="flex justify-end w-full">
+          <DialogTrigger asChild>
+            <Button variant="outline" onClick={openDialog} className="h-10">
+              Tambah Data Anak
+            </Button>
+          </DialogTrigger>
+        </div>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Tambah Data Anak</DialogTitle>
@@ -171,7 +173,7 @@ export default function Children() {
       </Dialog>
       {newFormData.children?.length ? (
         <div className="mt-4">
-          <h2 className="font-semibold mb-2">Data Anak:</h2>
+          <h2 className="font-semibold mb-2 text-[18px]">Data Anak:</h2>
           <ul className="space-y-2">
             {newFormData.children.map((child, index) => (
               <li
@@ -195,15 +197,13 @@ export default function Children() {
                   {child.tanggal_lahir_anak}
                 </div>
                 <div className="flex justify-end gap-1">
-                  <Button
-                    className="w-[40px] h-[40px] bg-red-800"
+                  <Trash2
+                    className="cursor-pointer hover:text-red-700"
                     onClick={() => {
                       removeChild(index),
                         toast.success("Data berhasil dihapus");
                     }}
-                  >
-                    <Trash2 />
-                  </Button>
+                  />
                 </div>
               </li>
             ))}
@@ -216,7 +216,7 @@ export default function Children() {
           onClick={() => {
             redirect(FormDataRoutes.REVIEW_DATA);
           }}
-          className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4"
+          className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4 h-10 w-30"
         >
           Next
         </Button>
