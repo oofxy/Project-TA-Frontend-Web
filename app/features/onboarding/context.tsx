@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useMemo,
 } from "react";
 import {
   ChildForm,
@@ -13,6 +14,8 @@ import {
   newFormInitialValuesSchema,
   NewFormInitialValuesType,
 } from "./schema";
+
+const LOCAL_STORAGE_KEY = "form-key-newFormData";
 
 const defaultForm: NewFormInitialValuesType = {
   nama: "",
@@ -40,13 +43,12 @@ type FormContextType = {
   updateNewFormDetails: (formDetails: Partial<NewForm>) => void;
   addChild: (child: ChildForm) => void;
   removeChild: (index: number) => void;
+  updateChild: (index: number, child: Partial<ChildForm>) => void;
   dataLoaded: boolean;
   resetData: () => void;
 };
 
-const LOCAL_STORAGE_KEY = "form-key-newFormData";
-
-export const FormContext = createContext<FormContextType | null>(null);
+const FormContext = createContext<FormContextType | null>(null);
 
 export const FormContextProvider = ({
   children,
@@ -55,84 +57,131 @@ export const FormContextProvider = ({
 }) => {
   const [newFormData, setNewFormData] =
     useState<NewFormInitialValuesType>(defaultForm);
-
   const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
-    readFromLocalStorage();
-    setDataLoaded(true);
+    const loadData = () => {
+      try {
+        const dataString = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (!dataString) return;
+
+        const parsedData = JSON.parse(dataString);
+        const validated = newFormInitialValuesSchema.safeParse(parsedData);
+
+        if (validated.success) {
+          setNewFormData(validated.data);
+        } else {
+          console.warn("Invalid localStorage data, resetting to default");
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+        }
+      } catch (error) {
+        console.error("Error reading from localStorage:", error);
+      } finally {
+        setDataLoaded(true);
+      }
+    };
+
+    loadData();
   }, []);
 
-  const writeToLocalStorage = useCallback(() => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newFormData));
-  }, [newFormData]);
-
-  useEffect(() => {
-    writeToLocalStorage();
-  }, [newFormData, dataLoaded, writeToLocalStorage]);
-
-  const readFromLocalStorage = () => {
-    console.log("Reading local storage");
-    const dataString = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!dataString) {
-      return setNewFormData(defaultForm);
+  const writeToLocalStorage = useCallback((data: NewFormInitialValuesType) => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.error("Error writing to localStorage:", error);
     }
+  }, []);
 
-    const validated = newFormInitialValuesSchema.safeParse(
-      JSON.parse(dataString)
-    );
-    console.log(validated);
+  const updateNewFormDetails = useCallback(
+    (formDetails: Partial<NewForm>) => {
+      setNewFormData((prev) => {
+        const updated = { ...prev, ...formDetails };
+        writeToLocalStorage(updated);
+        return updated;
+      });
+    },
+    [writeToLocalStorage]
+  );
 
-    if (validated.success) {
-      setNewFormData(validated.data);
-    } else {
-      setNewFormData(defaultForm);
-    }
-  };
+  const addChild = useCallback(
+    (child: ChildForm) => {
+      setNewFormData((prev) => {
+        const updated = {
+          ...prev,
+          children: [...(prev.children || []), child],
+        };
+        writeToLocalStorage(updated);
+        return updated;
+      });
+    },
+    [writeToLocalStorage]
+  );
 
-  const updateNewFormDetails = (formDetails: Partial<NewForm>) => {
-    setNewFormData((prev) => ({ ...prev, ...formDetails }));
-  };
+  const removeChild = useCallback(
+    (index: number) => {
+      setNewFormData((prev) => {
+        const updated = {
+          ...prev,
+          children: prev.children?.filter((_, i) => i !== index) || [],
+        };
+        writeToLocalStorage(updated);
+        return updated;
+      });
+    },
+    [writeToLocalStorage]
+  );
 
-  const resetData = () => {
+  const updateChild = useCallback(
+    (index: number, child: Partial<ChildForm>) => {
+      setNewFormData((prev) => {
+        if (!prev.children || index >= prev.children.length) return prev;
+
+        const updatedChildren = [...prev.children];
+        updatedChildren[index] = { ...updatedChildren[index], ...child };
+
+        const updated = { ...prev, children: updatedChildren };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
+    },
+    []
+  );
+
+  const resetData = useCallback(() => {
     setNewFormData(defaultForm);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(defaultForm));
-  };
+    writeToLocalStorage(defaultForm);
+  }, [writeToLocalStorage]);
 
-  const addChild = (child: ChildForm) => {
-    setNewFormData((prev) => ({
-      ...prev,
-      children: [...(prev.children || []), child],
-    }));
-  };
-
-  const removeChild = (index: number) => {
-    setNewFormData((prev) => ({
-      ...prev,
-      children: prev.children?.filter((_, i) => i !== index),
-    }));
-  };
+  const contextValue = useMemo(
+    () => ({
+      newFormData,
+      updateNewFormDetails,
+      dataLoaded,
+      resetData,
+      addChild,
+      removeChild,
+      updateChild,
+    }),
+    [
+      newFormData,
+      updateNewFormDetails,
+      dataLoaded,
+      resetData,
+      addChild,
+      removeChild,
+      updateChild,
+    ]
+  );
 
   return (
-    <FormContext.Provider
-      value={{
-        newFormData,
-        updateNewFormDetails,
-        dataLoaded,
-        resetData,
-        addChild,
-        removeChild,
-      }}
-    >
-      {children}
-    </FormContext.Provider>
+    <FormContext.Provider value={contextValue}>{children}</FormContext.Provider>
   );
 };
 
 export function useFormContext() {
   const context = useContext(FormContext);
   if (!context) {
-    throw new Error("useFormContext must be used within an FormContext");
+    throw new Error("useFormContext must be used within a FormContextProvider");
   }
   return context;
 }

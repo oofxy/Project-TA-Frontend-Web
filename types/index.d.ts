@@ -1,5 +1,6 @@
-declare interface TableDataProps<TData, TValue> {
+import { NewForm } from "@/app/features/onboarding/schema";
 
+declare interface TableDataProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
@@ -121,6 +122,14 @@ export type DataRegisterUser = {
     placeholder: string;
     className: string;
     type: React.HTMLInputTypeAttribute | undefined;
+  }
+
+  declare interface FormFieldConfig {
+    name: keyof NewForm;
+    label: string;
+    type: React.HTMLInputTypeAttribute;
+    placeholder: string;
+    required?: boolean;
   }
 
   export interface FormErrors {

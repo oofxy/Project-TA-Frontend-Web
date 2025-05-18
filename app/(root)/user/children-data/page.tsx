@@ -20,72 +20,62 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useActionState, useState } from "react";
+import React, { useActionState, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { childrenFormAction } from "./actions";
 import { FormErrors } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
 import toast from "react-hot-toast";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FormDataRoutes } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
+import { Edit, Loader2, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const fields: {
   name: keyof ChildForm;
   label: string;
   type: string;
   placeholder: string;
+  required?: boolean;
 }[] = [
   {
     name: "nama_anak",
     label: "Nama Lengkap Anak",
     type: "text",
     placeholder: "Masukan Nama lengkap anak",
+    required: true,
   },
   {
     name: "nik_anak",
     label: "NIK Anak",
     type: "text",
     placeholder: "Masukan NIK Anak",
+    required: true,
   },
   {
     name: "tempat_lahir_anak",
     label: "Tempat lahir anak",
     type: "text",
     placeholder: "Masukan Tempat lahir anak",
+    required: true,
   },
   {
     name: "tanggal_lahir_anak",
     label: "Tanggal lahir anak",
     type: "date",
     placeholder: "Masukan Tanggal lahir anak",
+    required: true,
   },
 ];
 
 const initialState: FormErrors = {};
 
 export default function Children() {
-  const { newFormData, addChild, removeChild } = useFormContext();
+  const router = useRouter();
+  const { newFormData, addChild, removeChild, updateChild } = useFormContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const openDialog = () => setIsDialogOpen(true);
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const [formState, formAction] = useActionState(
-    childrenFormAction,
-    initialState
-  );
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof ChildForm
-  ) => {
-    form.setValue(fieldName, e.target.value, { shouldValidate: true });
-
-    if (formState?.[fieldName]) {
-      formState[fieldName] = undefined;
-    }
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const form = useForm<ChildForm>({
     resolver: zodResolver(childSchema),
@@ -97,35 +87,83 @@ export default function Children() {
     },
   });
 
-  const onSubmit = (data: ChildForm) => {
-    addChild(data);
-    form.reset();
-    toast.success("Anak berhasil ditambahkan!");
-    closeDialog();
+  const [formState, formAction] = useActionState(
+    childrenFormAction,
+    initialState
+  );
+
+  useEffect(() => {
+    if (!isDialogOpen) {
+      form.reset();
+      setEditingIndex(null);
+    }
+  }, [isDialogOpen, form]);
+
+  useEffect(() => {
+    if (formState) {
+      Object.entries(formState).forEach(([field, message]) => {
+        if (message && field in form.control._fields) {
+          form.setError(field as keyof ChildForm, {
+            type: "server",
+            message,
+          });
+        }
+      });
+    }
+  }, [formState, form]);
+
+  const handleEdit = (index: number) => {
+    const child = newFormData.children?.[index];
+    if (child) {
+      form.reset(child);
+      setEditingIndex(index);
+      setIsDialogOpen(true);
+    }
+  };
+
+  const handleSubmit = async (data: ChildForm) => {
+    setIsSubmitting(true);
+    try {
+      if (editingIndex !== null) {
+        updateChild(editingIndex, data);
+        toast.success("Data anak berhasil diperbarui!");
+      } else {
+        addChild(data);
+        toast.success("Anak berhasil ditambahkan!");
+      }
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast.error("Gagal menambahkan data anak");
+      console.error("Error adding child:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRemoveChild = (index: number) => {
+    removeChild(index);
+    toast.success("Data berhasil dihapus");
   };
 
   return (
-    <div className="w-full p-5">
+    <div className="w-full p-5 max-w-4xl mx-auto">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <div className="flex justify-end w-full">
+        <div className="flex justify-end items-center w-full mb-6">
           <DialogTrigger asChild>
-            <Button variant="outline" onClick={openDialog} className="h-10">
+            <Button variant="outline" className="h-10">
               Tambah Data Anak
             </Button>
           </DialogTrigger>
         </div>
+
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Tambah Data Anak</DialogTitle>
+            <DialogTitle>Data Anak</DialogTitle>
           </DialogHeader>
 
           <Form {...form}>
             <form
-              action={formAction}
-              onSubmit={form.handleSubmit((data) => {
-                onSubmit(data);
-                closeDialog();
-              })}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
               {fields.map((field) => (
@@ -133,90 +171,122 @@ export default function Children() {
                   key={field.name}
                   control={form.control}
                   name={field.name}
-                  render={({ field: formField }) => (
+                  render={({ field: formField, fieldState }) => (
                     <FormItem>
-                      <FormLabel>{field.label}</FormLabel>
+                      <FormLabel>
+                        {field.label}
+                        {field.required && (
+                          <span className="text-red-500 ml-1">*</span>
+                        )}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...formField}
                           type={field.type}
                           placeholder={field.placeholder}
-                          className="flex justify-between"
+                          className={cn(
+                            "flex justify-between",
+                            fieldState.error && "border-red-500"
+                          )}
                           autoComplete="off"
-                          onChange={(e) => {
-                            formField.onChange(e);
-                            handleChange(e, field.name);
-                          }}
+                          aria-invalid={fieldState.error ? "true" : "false"}
                         />
                       </FormControl>
-                      <FormMessage>
-                        {form.formState.errors[field.name]?.message ||
-                          formState?.[field.name]}
-                      </FormMessage>
+                      <FormMessage>{fieldState.error?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
               ))}
-              <div className="flex justify-end">
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4"
-                  >
-                    Next
-                  </Button>
-                </DialogFooter>
-              </div>
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  className={cn(
+                    "bg-[#03624C] hover:bg-[#03624C]/90",
+                    "min-w-32 h-11 text-md",
+                    "transition-colors duration-200"
+                  )}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="animate-spin" />
+                      Menyimpan...
+                    </span>
+                  ) : (
+                    "Simpan"
+                  )}
+                </Button>
+              </DialogFooter>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
+
       {newFormData.children?.length ? (
-        <div className="mt-4">
-          <h2 className="font-semibold mb-2 text-[18px]">Data Anak:</h2>
-          <ul className="space-y-2">
+        <div className="mt-6 space-y-4">
+          <h2 className="font-semibold text-lg">Daftar Anak</h2>
+          <div className="space-y-3">
             {newFormData.children.map((child, index) => (
-              <li
+              <div
                 key={index}
-                className="grid grid-cols-5 items-center p-2 px-4 border rounded-md"
+                className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center p-4 border rounded-lg shadow-sm"
               >
-                <div className="flex flex-col font-bold">
-                  <p className="font-normal">Nama</p>
-                  {child.nama_anak}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Nama</p>
+                  <p className="font-medium">{child.nama_anak}</p>
                 </div>
-                <div className="flex flex-col font-bold">
-                  <p className="font-normal">NIK</p>
-                  {child.nik_anak}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">NIK</p>
+                  <p className="font-medium">{child.nik_anak}</p>
                 </div>
-                <div className="flex flex-col font-bold">
-                  <p className="font-normal">Tempat Lahir</p>
-                  {child.tempat_lahir_anak}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Tempat Lahir</p>
+                  <p className="font-medium">{child.tempat_lahir_anak}</p>
                 </div>
-                <div className="flex flex-col font-bold">
-                  <p className="font-normal">Tanggal Lahir</p>
-                  {child.tanggal_lahir_anak}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Tanggal Lahir</p>
+                  <p className="font-medium">{child.tanggal_lahir_anak}</p>
                 </div>
-                <div className="flex justify-end gap-1">
-                  <Trash2
-                    className="cursor-pointer hover:text-red-700"
-                    onClick={() => {
-                      removeChild(index),
-                        toast.success("Data berhasil dihapus");
-                    }}
-                  />
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEdit(index)}
+                    aria-label="Edit data anak"
+                    className="size-10"
+                  >
+                    <Edit className="text-blue-600 hover:text-blue-800" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveChild(index)}
+                    aria-label="Hapus data anak"
+                    className="size-10"
+                  >
+                    <Trash2 className="text-red-600 hover:text-red-800" />
+                  </Button>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
-      ) : null}
-      <div className="flex justify-end">
+      ) : (
+        <div className="mt-6 text-center py-8 border rounded-lg">
+          <p className="text-muted-foreground">
+            Belum ada data anak yang ditambahkan
+          </p>
+        </div>
+      )}
+
+      <div className="flex justify-end mt-8">
         <Button
-          type="submit"
-          onClick={() => {
-            redirect(FormDataRoutes.REVIEW_DATA);
-          }}
-          className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4 h-10 w-30"
+          onClick={() => router.push(FormDataRoutes.REVIEW_DATA)}
+          className={cn(
+            "bg-[#03624C] hover:bg-[#03624C]/90",
+            "min-w-32 h-11 text-md",
+            "transition-colors duration-200"
+          )}
         >
           Next
         </Button>

@@ -12,18 +12,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { parentsFormAction } from "./actions";
-import { FormErrors } from "@/types";
+import { FormErrors, FormFieldConfig } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { parentsFormAction } from "./actions";
 
-const fields: {
-  name: keyof NewForm;
-  label: string;
-  type: string;
-  placeholder: string;
-}[] = [
+const formFields: FormFieldConfig[] = [
   {
     name: "nama_ayah",
     label: "Nama Lengkap Ayah",
@@ -58,17 +55,8 @@ export default function Parents() {
     parentsFormAction,
     initialState
   );
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldName: keyof NewForm
-  ) => {
-    form.setValue(fieldName, e.target.value, { shouldValidate: true });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    if (formState?.[fieldName]) {
-      formState[fieldName] = undefined;
-    }
-  };
-  
   const form = useForm<NewForm>({
     resolver: zodResolver(newFormSchema),
     defaultValues: {
@@ -77,54 +65,101 @@ export default function Parents() {
       alamat_ayah: newFormData.alamat_ayah || "",
       alamat_ibu: newFormData.alamat_ibu || "",
     },
+    mode: "onChange",
   });
+
+  useEffect(() => {
+    if (formState) {
+      Object.entries(formState).forEach(([field, message]) => {
+        if (message) {
+          form.setError(field as keyof NewForm, {
+            type: "server",
+            message,
+          });
+        }
+      });
+    }
+  }, [formState, form]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: keyof NewForm
+  ) => {
+    const value = e.target.value;
+    form.setValue(fieldName, value, { shouldValidate: true });
+    updateNewFormDetails({ [fieldName]: value });
+
+    if (formState?.[fieldName]) {
+      form.clearErrors(fieldName);
+    }
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    formAction(formData);
+    setIsSubmitting(false);
+  };
+
   return (
-    <div className="w-full p-5">
+    <div className="w-full p-5 max-w-2xl mx-auto">
       <Form {...form}>
-        <form action={formAction} className="space-y-4">
-          {fields.map((field) => (
-            <FormField
-              key={field.name}
-              control={form.control}
-              name={field.name}
-              render={({ field: formField }) => (
-                <FormItem>
-                  <FormLabel>{field.label}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...formField}
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      className="flex justify-between"
-                      autoComplete="off"
-                      value={
-                        Array.isArray(formField.value)
-                          ? JSON.stringify(formField.value)
-                          : formField.value || ""
-                      }
-                      onChange={(e) => {
-                        formField.onChange(e);
-                        handleChange(e, field.name);
-                        updateNewFormDetails({
-                          [e.target.name]: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors[field.name]?.message ||
-                      formState?.[field.name]}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-          ))}
-          <div className="flex justify-end">
+        <form action={formAction} onSubmit={onSubmit} className="space-y-6">
+          <div className="flex flex-col gap-6">
+            {formFields.map((field) => (
+              <FormField
+                key={field.name}
+                control={form.control}
+                name={field.name}
+                render={({ field: formField, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {field.label}
+                      {field.required && (
+                        <span className="text-red-500">*</span>
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...formField}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        className={cn(
+                          "w-full",
+                          fieldState.error && "border-red-500"
+                        )}
+                        autoComplete="off"
+                        value={formField.value as string}
+                        onChange={(e) => handleChange(e, field.name)}
+                        aria-invalid={fieldState.error ? "true" : "false"}
+                      />
+                    </FormControl>
+                    <FormMessage>{fieldState.error?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-4">
             <Button
               type="submit"
-              className="bg-[#03624C] hover:bg-[#03624C]/80 mt-4 h-10 w-30"
+              className={cn(
+                "bg-[#03624C] hover:bg-[#03624C]/90",
+                "min-w-32 h-11 text-md",
+                "transition-colors duration-200"
+              )}
+              disabled={isSubmitting}
             >
-              Next
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="animate-spin" />
+                  Memproses...
+                </span>
+              ) : (
+                "Next"
+              )}
             </Button>
           </div>
         </form>
