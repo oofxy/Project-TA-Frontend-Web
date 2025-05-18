@@ -97,6 +97,7 @@ export async function getKaryawan(): Promise<DataRegisterKaryawan[]> {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
+    cache: "no-store",
   });
 
   // Check for a bad response

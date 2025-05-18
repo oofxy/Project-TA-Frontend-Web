@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { userFormSchema } from "./schema";
+import { cn, userFormSchema } from "@/lib/utils";
 import { z } from "zod";
 import { DataRegisterKaryawan } from "@/types";
 import Header from "@/components/Header";
@@ -33,7 +33,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Loader2 } from "lucide-react";
 import { checkUserExists, postRegisterUser } from "@/data/register-user";
 import { useRouter } from "next/navigation";
 
@@ -46,7 +46,7 @@ export default function CustomDialog({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const {
@@ -55,7 +55,7 @@ export default function CustomDialog({
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormSchema>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -64,27 +64,28 @@ export default function CustomDialog({
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   const selectedKaryawanId = watch("karyawanId");
-  const selectedKaryawanName =
-    karyawanData.find((k) => k.id === selectedKaryawanId)?.name ||
-    "Select Karyawan...";
+  const selectedKaryawan = karyawanData.find(
+    (k) => k.id === selectedKaryawanId
+  );
+  const selectedKaryawanName = selectedKaryawan?.name || "Select Karyawan...";
 
   const onSubmit = async (data: FormSchema) => {
-    setLoading(true);
+    setIsSubmitting(true);
 
     try {
       const isDuplicate = await checkUserExists(data.email, data.karyawanId);
       if (isDuplicate) {
-        toast.error("User with this email or Karyawan already exists");
-        setLoading(false);
+        toast.error("User with this email or Karyawan already exists", {});
         return;
       }
 
       const hashPassword = bcrypt.hashSync(data.password, 10);
 
-      const res = await postRegisterUser({
+      await postRegisterUser({
         selectedKaryawan: data.karyawanId,
         selectedName: data.name,
         selectedEmail: data.email,
@@ -92,126 +93,132 @@ export default function CustomDialog({
       });
 
       toast.success("User successfully registered");
-
       reset();
       setOpen(false);
-      router.push("/admin/register-user");
+      router.refresh();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Registration error:", error);
       toast.error("Failed to register user");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleKaryawanSelect = (karyawan: DataRegisterKaryawan) => {
-    setValue("karyawanId", karyawan.id);
-    setValue("name", karyawan.name);
-    setValue("email", karyawan.email);
+    setValue("karyawanId", karyawan.id, { shouldValidate: true });
+    setValue("name", karyawan.name, { shouldValidate: true });
+    setValue("email", karyawan.email, { shouldValidate: true });
     setSearchOpen(false);
   };
-
   return (
     <div>
       <Header onClick={() => setOpen(true)} buttonLabel="Add User" />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Register User</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              Register New User
+            </DialogTitle>
           </DialogHeader>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-10"
-          >
-            <div className="grid gap-5 mt-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Name</Label>
-                <div className="col-span-3">
-                  <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className="justify-between w-full"
-                      >
-                        {selectedKaryawanName}
-                        <ArrowDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-[280px] border rounded-md"
-                      side="right"
-                      align="start"
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-6">
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="karyawan">Karyawan</Label>
+                <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="justify-between w-full"
+                      id="karyawan"
                     >
-                      <Command>
-                        <CommandInput placeholder="Search Karyawan..." />
-                        <CommandList>
-                          <CommandEmpty>No Karyawan found.</CommandEmpty>
-                          <CommandGroup>
-                            {karyawanData.map((karyawan) => (
-                              <CommandItem
-                                key={karyawan.id}
-                                value={karyawan.name}
-                                onSelect={() => handleKaryawanSelect(karyawan)}
-                              >
-                                {karyawan.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  {errors.name && (
-                    <p className="col-span-4 text-sm text-red-500">
-                      {errors.name.message}
-                    </p>
-                  )}
-                </div>
+                      {selectedKaryawanName}
+                      <ArrowDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[var(--radix-popover-trigger-width)] p-0"
+                    side="right"
+                    align="start"
+                  >
+                    <Command className="border ml-1">
+                      <CommandInput placeholder="Search Karyawan..." />
+                      <CommandList>
+                        <CommandEmpty>No Karyawan found.</CommandEmpty>
+                        <CommandGroup>
+                          {karyawanData.map((karyawan) => (
+                            <CommandItem
+                              key={karyawan.id}
+                              value={karyawan.name}
+                              onSelect={() => handleKaryawanSelect(karyawan)}
+                              className="cursor-pointer"
+                            >
+                              {karyawan.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {errors.karyawanId && (
+                  <p className="text-sm text-red-500">
+                    {errors.karyawanId.message}
+                  </p>
+                )}
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  className="col-span-3"
-                  {...register("email")}
+                  value={watch("email")}
                   disabled
+                  className="bg-gray-100"
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password" className="text-right">
-                  Password
-                </Label>
-                <div className="col-span-3">
-                  <Input
-                    id="password"
-                    type="password"
-                    autoComplete="off"
-                    {...register("password")}
-                  />
-                  {errors.password && (
-                    <p className="col-span-4 text-sm text-red-500">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
 
             <DialogFooter>
               <Button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-[#17876E] hover:bg-[#17876f90]"
+                disabled={isSubmitting}
+                className={cn(
+                  "w-full bg-[#17876E] hover:bg-[#17876E]/90",
+                  "min-w-32 h-11 text-md",
+                  "transition-colors duration-200"
+                )}
               >
-                {loading ? "Adding..." : "Add User"}
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="animate-spin" />
+                    Registering...
+                  </span>
+                ) : (
+                  "Register User"
+                )}
               </Button>
             </DialogFooter>
           </form>
