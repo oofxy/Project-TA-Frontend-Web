@@ -3,6 +3,7 @@
 import { DataKaryawan } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Ellipsis, UserMinus, UserPen } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
   {
@@ -25,10 +26,18 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
     accessorKey: "edit",
     header: "Edit",
     cell: ({ row }) => {
+      const router = useRouter();
       const handleMoreData = () => {
         const data = row.original;
         console.log("Data Karyawan:", data);
+        router.push(`/admin/data-karyawan/more/${data.id}`);
       };
+
+      const handleEdit = async () => {
+        const data = row.original;
+        router.push(`/admin/data-karyawan/edit/${data.id}`);
+      };
+
       return (
         <div className="flex flex-row gap-2">
           <UserMinus
@@ -37,7 +46,7 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
           />
           <UserPen
             className="cursor-pointer hover:text-yellow-700"
-            onClick={() => {}}
+            onClick={handleEdit}
           />
           <Ellipsis
             className="cursor-pointer hover:text-green-700"
