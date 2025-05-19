@@ -55,10 +55,23 @@ const DialogTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <h2 className="text-xl font-bold">{children}</h2>;
 };
 
+const DialogDescription: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return <p className="text-sm text-gray-600 mt-2">{children}</p>;
+};
+
 const DialogFooter: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return <div className="flex justify-end mt-4 space-x-2">{children}</div>;
 };
 
-export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter };
+export {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+};

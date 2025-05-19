@@ -3,6 +3,8 @@
 import { Jabatan } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit2, Trash2 } from "lucide-react";
+import CustomDialogJabatan from "./CustomDialogJabatan";
+
 
 export const jabatan: ColumnDef<Jabatan>[] = [
   {
@@ -12,11 +14,17 @@ export const jabatan: ColumnDef<Jabatan>[] = [
   {
     accessorKey: "edit",
     header: "Edit",
-    cell: ({ row }) => (
-      <div className="flex flex-row gap-3">
-        <Trash2 className="icon" />
-        <Edit2 className="icon" />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const jabatanData = row.original;
+
+      return (
+        <div className="flex flex-row gap-3">
+          <Trash2 className="icon cursor-pointer" />
+          <CustomDialogJabatan jabatan={jabatanData} mode="edit">
+            <Edit2 className="icon cursor-pointer" />
+          </CustomDialogJabatan>
+        </div>
+      );
+    },
   },
 ];
