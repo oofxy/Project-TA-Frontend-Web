@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { submitFormAction } from "./actions";
 import { NewForm } from "@/app/features/onboarding/schema";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { cn, FormDataRoutes } from "@/lib/utils";
 import { useState } from "react";
 
 interface FormField {
@@ -15,8 +15,8 @@ interface FormField {
 }
 
 export default function Review() {
-  const { newFormData, resetData } = useFormContext();
   const router = useRouter();
+  const { newFormData, resetData } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formSections = [
@@ -31,7 +31,26 @@ export default function Review() {
         { label: "Tempat Lahir", value: newFormData.tempat_lahir },
         { label: "Tanggal Lahir", value: newFormData.tanggal_lahir },
         { label: "Alamat", value: newFormData.alamat },
+        { label: "Kelurahan", value: newFormData.kelurahan_id },
+        { label: "NPWP", value: newFormData.npwp },
+        { label: "Agama", value: newFormData.agama_id },
+        { label: "Pendidikan", value: newFormData.pendidikan_id },
+        { label: "Jenis Kelamin", value: newFormData.jenis_kelamin_id },
       ] as FormField[],
+    },
+    {
+      title: "Data Pekerjaan",
+      fields: [
+        { label: "Pangkat", value: newFormData.pangkat_id },
+        { label: "Jabatan", value: newFormData.jabatan_id },
+        { label: "Pekerjaan", value: newFormData.pekerjaan_id },
+        { label: "Golongan", value: newFormData.golongan_id },
+        { label: "Divisi", value: newFormData.divisi_id },
+        { label: "Status", value: newFormData.status_id },
+        { label: "Lokasi Kantor", value: newFormData.lokasi_kantor_id },
+        { label: "Lokasi Kerja", value: newFormData.lokasi_kerja_id },
+        { label: "Mulai Tugas", value: newFormData.mulai_tugas },
+      ],
     },
     {
       title: "Data Pasangan",
@@ -56,32 +75,32 @@ export default function Review() {
     },
   ];
 
-  const handleFormSubmit = async (formData: FormData) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
+
     try {
-      const { success, errorMsg, redirect } = await submitFormAction(
+      const { success, errorMsg } = await submitFormAction(
         newFormData as NewForm
       );
 
       if (success) {
-        toast.success("Data Berhasil Terkirim");
+        toast.success("Data berhasil dikirim");
         resetData();
-      } else if (errorMsg) {
-        toast.error(errorMsg);
-      }
-      if (redirect) {
-        router.push(redirect);
+        router.push(FormDataRoutes.PERSONAL_DATA);
+      } else {
+        toast.error(errorMsg || "Gagal mengirim data");
       }
     } catch (error) {
-      console.error("Submission error:", error);
       toast.error("Terjadi kesalahan saat mengirim data");
+      console.error("Submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form action={handleFormSubmit} className="flex flex-col w-full gap-6">
+    <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-6">
       <div className="columns-1 md:columns-2 space-y-4">
         {formSections.map((section) => (
           <SectionCard key={section.title} title={section.title}>
@@ -97,16 +116,14 @@ export default function Review() {
 
         {newFormData.children?.map((child, index) => (
           <SectionCard key={`child-${index}`} title={`Data Anak ${index + 1}`}>
-            <FieldRow label="Nama Anak" value={child.nama_anak} />
-            <FieldRow label="NIK Anak" value={child.nik_anak} />
+            <FieldRow label="Nama Anak" value={child.name} />
+            <FieldRow label="NIK Anak" value={child.nik} />
             <FieldRow
-              label="Tempat Lahir Anak"
-              value={child.tempat_lahir_anak}
+              label="Jenis Kelamin Anak"
+              value={child.jenis_kelamin_id}
             />
-            <FieldRow
-              label="Tanggal Lahir Anak"
-              value={child.tanggal_lahir_anak}
-            />
+            <FieldRow label="Tempat Lahir Anak" value={child.tempat_lahir} />
+            <FieldRow label="Tanggal Lahir Anak" value={child.tanggal_lahir} />
           </SectionCard>
         ))}
       </div>

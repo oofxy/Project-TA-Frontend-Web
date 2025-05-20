@@ -21,46 +21,58 @@ export const personalSchema = z.object({
   tempat_lahir: z.string().min(1, "Tempat lahir tidak boleh kosong"),
   tanggal_lahir: z.string().min(1, "Tanggal lahir tidak boleh kosong"),
   alamat: z.string().min(1, "Alamat tidak boleh kosong"),
-  npwp: z.string().min(1, "NPWP tidak boleh kosong"),
+  kelurahan_id: z.string().optional(),
+  npwp: z
+    .string()
+    .min(1, "NPWP tidak boleh kosong")
+    .regex(/^\d+$/, "No telepon harus berupa angka"),
+  agama_id: z.string().optional(),
+  pendidikan_id: z.string().optional(),
+  jenis_kelamin_id: z.string().optional(),
+});
+
+export const workSchema = z.object({
+  pangkat_id: z.string().optional(),
+  jabatan_id: z.string().optional(),
+  pekerjaan_id: z.string().optional(),
+  golongan_id: z.string().optional(),
+  divisi_id: z.string().optional(),
+  status_id: z.string().optional(),
+  mulai_tugas: z.string().min(1, "Mulai Tugas tidak boleh kosong"),
+  lokasi_kantor_id: z.string().optional(),
+  lokasi_kerja_id: z.string().optional(),
 });
 
 export const partnerSchema = z.object({
-  nama_pasangan: z.string().min(1, "Nama pasangan tidak boleh kosong"),
-  tempat_lahir_pasangan: z
-    .string()
-    .min(1, "Tempat lahir pasangan tidak boleh kosong"),
-  pekerjaan_pasangan: z
-    .string()
-    .min(1, "Pekerjaan pasangan tidak boleh kosong"),
-  telephone_pasangan: z
-    .string()
-    .min(1, "No telepon pasangan tidak boleh kosong")
-    .regex(/^\d+$/, "No telepon pasangan harus berupa angka"),
+  nama_pasangan: z.string(),
+  tempat_lahir_pasangan: z.string(),
+  pekerjaan_pasangan: z.string(),
+  telephone_pasangan: z.string(),
 });
 
 export const parentSchema = z.object({
-  nama_ayah: z.string().min(1, "Nama ayah tidak boleh kosong"),
-  nama_ibu: z.string().min(1, "Nama ibu tidak boleh kosong"),
-  alamat_ayah: z.string().min(1, "Alamat ayah tidak boleh kosong"),
-  alamat_ibu: z.string().min(1, "Alamat ibu tidak boleh kosong"),
+  nama_ayah: z.string(),
+  nama_ibu: z.string(),
+  alamat_ayah: z.string(),
+  alamat_ibu: z.string(),
 });
 
 export const childSchema = z.object({
-  nama_anak: z.string().min(1, "Nama anak tidak boleh kosong"),
-  nik_anak: z
+  name: z.string().min(1, "Nama anak tidak boleh kosong"),
+  nik: z
     .string()
     .min(1, "NIK anak tidak boleh kosong")
     .regex(/^\d+$/, "NIK anak harus berupa angka"),
-  tempat_lahir_anak: z.string().min(1, "Tempat lahir anak tidak boleh kosong"),
-  tanggal_lahir_anak: z
-    .string()
-    .min(1, "Tanggal lahir anak tidak boleh kosong"),
+  jenis_kelamin_id: z.string().optional(),
+  tempat_lahir: z.string().min(1, "Tempat lahir anak tidak boleh kosong"),
+  tanggal_lahir: z.string().min(1, "Tanggal lahir anak tidak boleh kosong"),
 });
 
 export const childrenSchema = z.array(childSchema);
 
 export const newFormSchema = z.object({
   ...personalSchema.shape,
+  ...workSchema.shape,
   ...partnerSchema.shape,
   ...parentSchema.shape,
   children: childrenSchema.optional(),
@@ -75,7 +87,20 @@ export const newFormInitialValuesSchema = z.object({
   tempat_lahir: z.string().optional(),
   tanggal_lahir: z.string().optional(),
   alamat: z.string().optional(),
+  pangkat_id: z.string().optional(),
   npwp: z.string().optional(),
+  agama_id: z.string().optional(),
+  pendidikan_id: z.string().optional(),
+  jenis_kelamin_id: z.string().optional(),
+  kelurahan_id: z.string().optional(),
+  jabatan_id: z.string().optional(),
+  pekerjaan_id: z.string().optional(),
+  golongan_id: z.string().optional(),
+  divisi_id: z.string().optional(),
+  status_id: z.string().optional(),
+  lokasi_kantor_id: z.string().optional(),
+  lokasi_kerja_id: z.string().optional(),
+  mulai_tugas: z.string().optional(),
   nama_pasangan: z.string().optional(),
   tempat_lahir_pasangan: z.string().optional(),
   pekerjaan_pasangan: z.string().optional(),

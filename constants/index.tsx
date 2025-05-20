@@ -60,26 +60,32 @@ export const formStepLinks = [
   },
   {
     icon: 2,
-    route: "/user/partner-data",
-    label: "Data Pasangan",
+    route: "/user/work-data",
+    label: "Data Pekerjaan",
     step: "Step 2"
   },
   {
     icon: 3,
-    route: "/user/parents-data",
-    label: "Data Orang Tua",
+    route: "/user/partner-data",
+    label: "Data Pasangan",
     step: "Step 3"
   },
   {
     icon: 4,
-    route: "/user/children-data",
-    label: "Data Anak",
+    route: "/user/parents-data",
+    label: "Data Orang Tua",
     step: "Step 4"
   },
   {
     icon: 5,
+    route: "/user/children-data",
+    label: "Data Anak",
+    step: "Step 5"
+  },
+  {
+    icon: 6,
     route: "/user/review",
     label: "Review",
-    step: "Step 5"
+    step: "Step 6"
   },
 ];

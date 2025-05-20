@@ -106,6 +106,12 @@ export default function Parents() {
     <div className="w-full p-5 max-w-2xl mx-auto">
       <Form {...form}>
         <form action={formAction} onSubmit={onSubmit} className="space-y-6">
+          <h1 className="flex gap-1 font-semibold text-2xl">
+            Data Orang Tua{" "}
+            <span className="font-normal text-[14px] text-red-500">
+              (opsional)
+            </span>
+          </h1>
           <div className="flex flex-col gap-6">
             {formFields.map((field) => (
               <FormField
@@ -116,9 +122,7 @@ export default function Parents() {
                   <FormItem>
                     <FormLabel>
                       {field.label}
-                      {field.required && (
-                        <span className="text-red-500">*</span>
-                      )}
+                      
                     </FormLabel>
                     <FormControl>
                       <Input

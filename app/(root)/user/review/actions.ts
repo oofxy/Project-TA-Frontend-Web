@@ -23,22 +23,6 @@ export const submitFormAction = async (
     };
   }
 
-  const partnerFormValidated = partnerSchema.safeParse(form);
-  if (!partnerFormValidated.success) {
-    return {
-      redirect: FormDataRoutes.PARTNER_DATA,
-      errorMsg: "Tolong Validasi Data Pasangan Anda",
-    };
-  }
-
-  const parentsFormValidated = parentSchema.safeParse(form);
-  if (!parentsFormValidated.success) {
-    return {
-      redirect: FormDataRoutes.PARENT_DATA,
-      errorMsg: "Tolong Validasi Data Orang Tua Anda",
-    };
-  }
-
   const payload = {
     name: form.nama,
     nip: form.nip,
@@ -48,19 +32,19 @@ export const submitFormAction = async (
     tempat_lahir: form.tempat_lahir,
     tanggal_lahir: form.tanggal_lahir,
     alamat: form.alamat,
-    // kelurahan_id: form.kelurahan_id,
-    // pendidikan_id: form.pendidikan_id,
+    kelurahan_id: form.kelurahan_id,
+    pendidikan_id: form.pendidikan_id,
     npwp: form.npwp,
-    // jenis_kelamin_id: form.jenis_kelamin_id,
-    // mulai_tugas: form.mulai_tugas,
-    // pangkat_id: form.pangkat_id,
-    // jabatan_id: form.jabatan_id,
-    // pekerjaan_id: form.pekerjaan_id,
-    // golongan_id: form.golongan_id,
-    // divisi_id: form.divisi_id,
-    // agama_id: form.agama_id,
-    // lokasi_kantor_id: form.lokasi_kantor_id,
-    // lokasi_kerja_id: form.lokasi_kerja_id,
+    jenis_kelamin_id: form.jenis_kelamin_id,
+    mulai_tugas: form.mulai_tugas,
+    pangkat_id: form.pangkat_id,
+    jabatan_id: form.jabatan_id,
+    pekerjaan_id: form.pekerjaan_id,
+    golongan_id: form.golongan_id,
+    divisi_id: form.divisi_id,
+    agama_id: form.agama_id,
+    lokasi_kantor_id: form.lokasi_kantor_id,
+    lokasi_kerja_id: form.lokasi_kerja_id,
     nama_pasangan: form.nama_pasangan,
     tempat_lahir_pasangan: form.tempat_lahir_pasangan,
     pekerjaan_id_pasangan: form.pekerjaan_pasangan,
@@ -69,11 +53,7 @@ export const submitFormAction = async (
     nama_ibu: form.nama_ibu,
     alamat_ayah: form.alamat_ayah,
     alamat_ibu: form.alamat_ibu,
-    aktif: 1,
-  };
-
-  const childrenPayload = {
-    nama_anak: form.children,
+    status_id: form.status_id,
   };
 
   try {
@@ -96,35 +76,44 @@ export const submitFormAction = async (
       };
     }
 
-    const created = await res.json();
-    const karyawanId = created.id;
+    const karyawanData = await res.json();
+    console.log("Karyawan response:", karyawanData);
+    const karyawanId = karyawanData.karyawan.id;
 
-    for (const child of form.children || []) {
-      const childPayload = {
-        id: karyawanId,
-        nama_anak: child.nama_anak,
-        nik_anak: child.nik_anak,
-        tempat_lahir_anak: child.tempat_lahir_anak,
-        tanggal_lahir_anak: child.tanggal_lahir_anak,
+    if (!karyawanId) {
+      console.error("Karyawan ID is missing in response");
+      return {
+        success: false,
+        errorMsg: "Gagal mendapatkan ID karyawan dari respons server",
       };
+    }
 
-      const childRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}anak`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-        },
-        body: JSON.stringify(childPayload),
-      });
+    if (form.children?.length) {
+      for (const child of form.children || []) {
+        const childRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}anak`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+          },
+          body: JSON.stringify({
+            karyawan_id: karyawanId,
+            name: child.name,
+            nik: child.nik,
+            jenis_kelamin_id: child.jenis_kelamin_id,
+            tempat_lahir: child.tempat_lahir,
+            tanggal_lahir: child.tanggal_lahir,
+          }),
+        });
 
-      if (!childRes.ok) {
-        const error = await childRes.json();
-        console.log("Error response", error);
-        return {
-          success: false,
-          errorMsg: error.message || "Gagal menyimpan data",
-        };
+        if (!childRes.ok) {
+          const error = await childRes.json();
+          console.log("Error response", error);
+          return {
+            success: false,
+            errorMsg: error.message || "Gagal menyimpan data anak",
+          };
+        }
       }
     }
 

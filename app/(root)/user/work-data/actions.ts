@@ -1,14 +1,14 @@
-import { personalSchema } from "@/app/features/onboarding/schema";
+import { workSchema } from "@/app/features/onboarding/schema";
 import { FormDataRoutes } from "@/lib/utils";
 import { FormErrors } from "@/types";
 import { redirect } from "next/navigation";
 
-export const personalFormAction = (
+export const workFormAction = (
   prevState: FormErrors | undefined,
   formData: FormData
 ): FormErrors | undefined => {
   const data = Object.fromEntries(formData.entries());
-  const validated = personalSchema.safeParse(data);
+  const validated = workSchema.safeParse(data);
 
   if (!validated.success) {
     const errors = validated.error.errors.reduce((acc: FormErrors, issue) => {
@@ -17,7 +17,7 @@ export const personalFormAction = (
     }, {});
     return errors;
   } else {
-    redirect(FormDataRoutes.WORK_DATA);
+    redirect(FormDataRoutes.PARTNER_DATA);
     return undefined;
   }
 };

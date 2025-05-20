@@ -13,6 +13,7 @@ export const authFormSchema = z.object({
 
 export enum FormDataRoutes {
   PERSONAL_DATA = "/user/personal-data",
+  WORK_DATA = "/user/work-data",
   PARTNER_DATA = "/user/partner-data",
   PARENT_DATA = "/user/parents-data",
   CHILDREN_DATA = "/user/children-data",
