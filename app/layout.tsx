@@ -28,6 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
+        <Toaster position="top-center" />
         {children}
         <Toaster position="top-center"/>
       </body>

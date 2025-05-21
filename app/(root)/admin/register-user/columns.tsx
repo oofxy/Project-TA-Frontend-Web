@@ -1,30 +1,50 @@
 "use client";
 
+import { deleteUser } from "@/data/register-user";
 import { DataRegisterUser } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Ellipsis, Trash2, UserPen } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export const dataRegisterUser: ColumnDef<DataRegisterUser>[] = [
   {
-    accessorKey: "nama",
+    accessorKey: "name",
     header: "Nama",
   },
   {
-    accessorKey: "akun",
+    accessorKey: "email",
     header: "Akun",
   },
   {
-    accessorKey: "password",
-    header: "Password",
-  },
-  {
-    accessorKey: "edit",
+    id: "actions",
     header: "Edit",
-    cell: () => (
-      <div className="flex flex-row gap-2">
-        <Trash2 />
-        <UserPen />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const router = useRouter();
+      const user = row.original;
+
+      const handleDelete = async () => {
+        try {
+          await deleteUser(user.id);
+          toast.success("User deleted successfully");
+          router.push("/admin/register-user");
+        } catch (error) {
+          toast.error("Failed to delete user");
+          console.error(error);
+        }
+      };
+
+      return (
+        <div className="flex flex-row gap-2">
+          <button
+            onClick={handleDelete}
+            className="text-black hover:text-red-700 hover:cursor-pointer"
+            title="Delete"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
+      );
+    },
   },
 ];
