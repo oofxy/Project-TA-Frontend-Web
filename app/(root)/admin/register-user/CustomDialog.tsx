@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 
 import { cn, userFormSchema } from "@/lib/utils";
 import { z } from "zod";
-import { DataRegisterKaryawan } from "@/types";
+import { DataKaryawan } from "@/types";
 import Header from "@/components/Header";
 import {
   Dialog,
@@ -42,7 +42,7 @@ type FormSchema = z.infer<typeof userFormSchema>;
 export default function CustomDialog({
   karyawanData,
 }: {
-  karyawanData: DataRegisterKaryawan[];
+  karyawanData: DataKaryawan[];
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -104,7 +104,7 @@ export default function CustomDialog({
     }
   };
 
-  const handleKaryawanSelect = (karyawan: DataRegisterKaryawan) => {
+  const handleKaryawanSelect = (karyawan: DataKaryawan) => {
     setValue("karyawanId", karyawan.id, { shouldValidate: true });
     setValue("name", karyawan.name, { shouldValidate: true });
     setValue("email", karyawan.email, { shouldValidate: true });
@@ -189,7 +189,7 @@ export default function CustomDialog({
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
-                  type="password"
+                  type="text"
                   autoComplete="new-password"
                   {...register("password")}
                 />

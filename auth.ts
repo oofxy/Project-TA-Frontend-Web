@@ -2,7 +2,7 @@ import NextAuth, { AuthError } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authFormSchema } from "./lib/zod";
 
-export class CustomAuthError extends AuthError{
+export class CustomAuthError extends AuthError {
   constructor(msg: string) {
     super();
     this.message = msg;
@@ -36,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = parsedCredentials.data;
 
         try {
-          const res = await fetch(`${process.env.API_URL}login`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -55,9 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           if (!user) {
-            throw new CustomAuthError(
-              "CredentialsSignin"
-            );
+            throw new CustomAuthError("CredentialsSignin");
           }
 
           return user;

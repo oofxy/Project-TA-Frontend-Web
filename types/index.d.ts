@@ -1,8 +1,11 @@
 import { NewForm } from "@/app/features/onboarding/schema";
 
-declare interface TableDataProps<TData, TValue> {
+interface TableDataProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  pageSize?: number;
+  isLoading?: boolean;
+  onRowClick?: (row: TData) => void;
 }
 
 export type DataKaryawan = {
@@ -160,7 +163,11 @@ declare interface SelectOption {
   label: string;
 }
 
-export interface FormErrors {
+declare interface FormErrors {
   [key: string]: string | undefined;
 }
 
+declare interface HeaderProps {
+  buttonLabel: string;
+  onClick: React.MouseEventHandler;
+}
