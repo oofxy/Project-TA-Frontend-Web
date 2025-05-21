@@ -1,3 +1,5 @@
+import { NewForm } from "@/app/features/onboarding/schema";
+
 declare interface TableDataProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -145,3 +147,20 @@ declare interface TextFieldProps {
   className: string;
   type: React.HTMLInputTypeAttribute | undefined;
 }
+
+declare interface FormFieldConfig {
+  name: keyof NewForm;
+  label: string;
+  type: React.HTMLInputTypeAttribute | "select";
+  placeholder?: string;
+}
+
+declare interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export interface FormErrors {
+  [key: string]: string | undefined;
+}
+

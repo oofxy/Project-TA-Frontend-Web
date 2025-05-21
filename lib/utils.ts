@@ -19,3 +19,13 @@ export const userFormSchema = z.object({
 });
 
 export type FormSchema = z.infer<typeof userFormSchema>;
+
+export enum FormDataRoutes {
+  PERSONAL_DATA = "/user/personal-data",
+  WORK_DATA = "/user/work-data",
+  PARTNER_DATA = "/user/partner-data",
+  PARENT_DATA = "/user/parents-data",
+  CHILDREN_DATA = "/user/children-data",
+  REVIEW_DATA = "/user/review"
+}
+
