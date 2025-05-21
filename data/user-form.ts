@@ -1,52 +1,3 @@
-import { DataKaryawan } from "@/types";
-
-export async function getDataKaryawan(): Promise<DataKaryawan[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-    },
-  });
-
-  // Check for a bad response
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to fetch User: ${res.status}`);
-  }
-
-  const contentType = res.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await res.text();
-    console.error("Expected JSON, got:", text);
-    throw new Error("Invalid content type: " + contentType);
-  }
-
-  const data = await res.json();
-  return data;
-}
-
-export async function patchDataKaryawan(
-  id: string,
-  data: Partial<DataKaryawan>
-): Promise<void> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-    },
-    body: JSON.stringify(data),
-  });
-  // Check for a bad response
-  if (!res.ok) {
-    const error = await res.text();
-    console.log("Error response:", error);
-    throw new Error(`Failed to fetch Karyawan: ${res.status}`);
-  }
-}
-
 interface SelectOption {
   value: string;
   label: string;
@@ -81,11 +32,12 @@ export async function fetchSelectOptions(): Promise<
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
             {
-              cache: "no-store",
+              method: "GET",
               headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
               },
+              cache: "no-store",
             }
           );
 
@@ -96,7 +48,12 @@ export async function fetchSelectOptions(): Promise<
           const contentType = response.headers.get("content-type");
           if (!contentType?.includes("application/json")) {
             const text = await response.text();
-            throw new Error(`Expected JSON but received: ${text}`);
+            if (text.trim().startsWith("<!DOCTYPE html>")) {
+              throw new Error(
+                `API endpoint returned HTML instead of JSON: ${endpoint}`
+              );
+            }
+            throw new Error(`Expected JSON but received: ${contentType}`);
           }
 
           const data = await response.json();
