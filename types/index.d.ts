@@ -38,9 +38,9 @@ export type DataKaryawan = {
 };
 
 export type DataRegisterUser = {
-  id: number;
+  id: string;
   nama: string;
-  akun: string;
+  email: string;
   password: string;
   edit: string;
 };

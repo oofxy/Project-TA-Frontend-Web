@@ -22,7 +22,6 @@ const layout = ({
       <div className="flex h-screen w-full font-inter">
         <CustomSideBar />
         <div className="flex flex-col flex-1">
-          <Header />
           <main className="flex-1 p-4">{children}</main>
         </div>
       </div>
