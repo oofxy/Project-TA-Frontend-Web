@@ -4,13 +4,37 @@ declare interface TableDataProps<TData, TValue> {
 }
 
 export type DataKaryawan = {
-  id: number;
-  nama: string;
+  id: string;
+  name: string;
+  nip: string;
+  nik: string;
   email: string;
-  telepon: string;
+  telephone: string;
+  tempat_lahir: string;
+  tanggal_lahir: string;
   alamat: string;
-  agama: string;
-  edit: string;
+  kelurahan_id: string;
+  pendidikan_id: string;
+  npwp: string;
+  jenis_kelamin_id: string;
+  mulai_tugas: string;
+  pangkat_id: string;
+  jabatan_id: string;
+  pekerjaan_id: string;
+  golongan_id: string;
+  divisi_id: string;
+  agama_id: string;
+  lokasi_kantor_id: string;
+  lokasi_kerja_id: string;
+  status_id: string;
+  nama_pasangan: string;
+  tempat_lahir_pasangan: string;
+  pekerjaan_id_pasangan: string;
+  telephone_pasangan: string;
+  nama_ayah: string;
+  nama_ibu: string;
+  alamat_ayah: string;
+  alamat_ibu: string;
 };
 
 export type DataRegisterUser = {
@@ -20,18 +44,6 @@ export type DataRegisterUser = {
   password: string;
   edit: string;
 };
-
-export type DataRegisterKaryawan = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-export interface HeaderProps {
-  onClick: () => void;
-  buttonLabel: string;
-  onSearch?: (value: string) => void;
-}
 
 interface PaginationProps {
   totalItems: number;
@@ -128,9 +140,8 @@ export type JenisKelamin = {
   jenisKelamin: string;
 };
 
-export interface TextFieldProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+declare interface TextFieldProps {
   placeholder: string;
   className: string;
-  type: string;
+  type: React.HTMLInputTypeAttribute | undefined;
 }
