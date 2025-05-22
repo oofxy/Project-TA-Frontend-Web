@@ -27,10 +27,9 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
     header: "Edit",
     cell: ({ row }) => {
       const router = useRouter();
-      const handleMoreData = () => {
+      const handleViewData = () => {
         const data = row.original;
-        console.log("Data Karyawan:", data);
-        router.push(`/admin/data-karyawan/more/${data.id}`);
+        router.push(`/admin/data-karyawan/view/${data.id}`);
       };
 
       const handleEdit = async () => {
@@ -50,7 +49,7 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
           />
           <Ellipsis
             className="cursor-pointer hover:text-green-700"
-            onClick={handleMoreData}
+            onClick={handleViewData}
           />
         </div>
       );

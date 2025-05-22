@@ -6,10 +6,8 @@ import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { cn, userFormSchema } from "@/lib/utils";
-import { z } from "zod";
+import { cn } from "@/lib/utils";
 import { DataKaryawan } from "@/types";
-import Header from "@/components/Header";
 import {
   Dialog,
   DialogContent,
@@ -36,8 +34,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowDown, Loader2 } from "lucide-react";
 import { checkUserExists, postRegisterUser } from "@/data/register-user";
 import { useRouter } from "next/navigation";
-
-type FormSchema = z.infer<typeof userFormSchema>;
+import { FormSchema, userFormSchema } from "@/lib/zod";
+import SearchInput from "@/components/SearchInput";
 
 export default function CustomDialog({
   karyawanData,
@@ -112,7 +110,10 @@ export default function CustomDialog({
   };
   return (
     <div>
-      <Header onClick={() => setOpen(true)} buttonLabel="Add User" />
+      <div className="flex justify-between px-5 pb-6 pt-2">
+        <SearchInput />
+        <Button onClick={() => setOpen(true)} className="bg-gray-400">Add User</Button>
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">

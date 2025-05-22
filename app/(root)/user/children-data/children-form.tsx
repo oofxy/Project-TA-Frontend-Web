@@ -24,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { useFormContext } from "@/app/features/onboarding/context";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { FormDataRoutes } from "@/lib/utils";
+import { childrenFormFields, FormDataRoutes } from "@/lib/utils";
 import { Edit, Loader2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -34,44 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const fields = [
-  {
-    name: "name",
-    label: "Nama Lengkap Anak",
-    type: "text",
-    placeholder: "Masukan Nama lengkap anak",
-    required: true,
-  },
-  {
-    name: "nik",
-    label: "NIK Anak",
-    type: "text",
-    placeholder: "Masukan NIK Anak",
-    required: true,
-  },
-  {
-    name: "jenis_kelamin_id",
-    label: "Jenis Kelamin Anak",
-    type: "select",
-    placeholder: "Pilih Jenis Kelamin Anak",
-    required: true,
-  },
-  {
-    name: "tempat_lahir",
-    label: "Tempat lahir anak",
-    type: "text",
-    placeholder: "Masukan Tempat lahir anak",
-    required: true,
-  },
-  {
-    name: "tanggal_lahir",
-    label: "Tanggal lahir anak",
-    type: "date",
-    placeholder: "Masukan Tanggal lahir anak",
-    required: true,
-  },
-] as const;
 
 interface ChildrenFormProps {
   initialOptions: Record<string, Array<{ value: string; label: string }>>;
@@ -172,7 +134,7 @@ export default function ChildrenForm({ initialOptions }: ChildrenFormProps) {
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
-              {fields.map((field) => (
+              {childrenFormFields.map((field) => (
                 <FormField
                   key={field.name}
                   control={form.control}

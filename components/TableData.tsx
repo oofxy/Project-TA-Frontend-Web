@@ -93,7 +93,7 @@ export function TableData<TData, TValue>({
           pages.push(i);
         }
       } else if (rightEllipsis) {
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 3; i++) {
           pages.push(i);
         }
         pages.push("...");

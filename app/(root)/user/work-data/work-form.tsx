@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { workFormAction } from "./actions";
 import { FormErrors, FormFieldConfig } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
-import { cn } from "@/lib/utils";
+import { cn, workFormFields } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import {
   Select,
@@ -26,63 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const formFields: FormFieldConfig[] = [
-  {
-    name: "pangkat_id",
-    label: "Pangkat",
-    type: "select",
-    placeholder: "Pilih Pangkat",
-  },
-  {
-    name: "jabatan_id",
-    label: "Jabatan",
-    type: "select",
-    placeholder: "Pilih Jabatan",
-  },
-  {
-    name: "pekerjaan_id",
-    label: "Pekerjaan",
-    type: "select",
-    placeholder: "Pilih Pekerjaan",
-  },
-  {
-    name: "golongan_id",
-    label: "Golongan",
-    type: "select",
-    placeholder: "Pilih Golongan",
-  },
-  {
-    name: "divisi_id",
-    label: "Divisi",
-    type: "select",
-    placeholder: "Pilih Divisi",
-  },
-  {
-    name: "status_id",
-    label: "Status",
-    type: "select",
-    placeholder: "Pilih Status",
-  },
-  {
-    name: "lokasi_kantor_id",
-    label: "Lokasi Kantor",
-    type: "select",
-    placeholder: "Pilih Lokasi Kantor",
-  },
-  {
-    name: "lokasi_kerja_id",
-    label: "Lokasi Kerja",
-    type: "select",
-    placeholder: "Pilih Lokasi Kerja",
-  },
-  {
-    name: "mulai_tugas",
-    label: "Mulai Tugas",
-    type: "date",
-    placeholder: "Masukan Mulai Tugas",
-  },
-];
 
 interface WorkFormProps {
   initialOptions: Record<string, Array<{ value: string; label: string }>>;
@@ -165,7 +108,7 @@ export default function WorkForm({ initialOptions }: WorkFormProps) {
         <form onSubmit={onSubmit} className="space-y-6">
           <h1 className="flex gap-1 font-semibold text-2xl">Data Personal </h1>
           <div className="flex flex-col gap-6">
-            {formFields.map((field) => (
+            {workFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}

@@ -7,3 +7,12 @@ export const authFormSchema = z.object({
     .email({ message: "Invalid email type" }),
   password: z.string().min(1, "Please fill the password"),
 });
+
+export const userFormSchema = z.object({
+  karyawanId: z.string().nonempty("Karyawan is required"),
+  name: z.string().nonempty("Name is required"),
+  email: z.string().email("Invalid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export type FormSchema = z.infer<typeof userFormSchema>;

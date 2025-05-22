@@ -16,36 +16,9 @@ import React, { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormErrors, FormFieldConfig } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
-import { cn } from "@/lib/utils";
+import { cn, partnerFormFields } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { partnerFormAction } from "./actions";
-
-const formFields: FormFieldConfig[] = [
-  {
-    name: "nama_pasangan",
-    label: "Nama Lengkap Pasangan",
-    type: "text",
-    placeholder: "Masukan Nama Lengkap Pasangan",
-  },
-  {
-    name: "tempat_lahir_pasangan",
-    label: "Tempat Lahir Pasangan",
-    type: "text",
-    placeholder: "Masukan Tempat Lahir Pasangan",
-  },
-  {
-    name: "pekerjaan_pasangan",
-    label: "Pekerjaan Pasangan",
-    type: "text",
-    placeholder: "Masukan Pekerjaan Pasangan",
-  },
-  {
-    name: "telephone_pasangan",
-    label: "Telepon Pasangan",
-    type: "tel",
-    placeholder: "Masukan Telepon Pasangan",
-  },
-];
 
 const initialState: FormErrors = {};
 
@@ -111,7 +84,7 @@ export default function Partner() {
             <span className="font-normal text-[14px] text-red-500">(opsional)</span>
           </h1>
           <div className="flex flex-col gap-6">
-            {formFields.map((field) => (
+            {partnerFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}

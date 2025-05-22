@@ -1,4 +1,4 @@
-import { DataRegisterKaryawan, DataRegisterUser } from "@/types";
+import { DataKaryawan, DataRegisterUser } from "@/types";
 
 export async function getRegisterUser(): Promise<DataRegisterUser[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}user`, {
@@ -90,8 +90,8 @@ export async function deleteUser(id: string): Promise<void> {
   }
 }
 
-export async function getKaryawan(): Promise<DataRegisterKaryawan[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan`, {
+export async function getKaryawan(): Promise<DataKaryawan[]> {
+const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

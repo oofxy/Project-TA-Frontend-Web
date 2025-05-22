@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { personalFormAction } from "./actions";
 import { FormErrors, FormFieldConfig } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
-import { cn } from "@/lib/utils";
+import { cn, personalFormFields } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import {
   Select,
@@ -26,87 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const formFields: FormFieldConfig[] = [
-  {
-    name: "nama",
-    label: "Nama Lengkap",
-    type: "text",
-    placeholder: "Masukan Nama Lengkap",
-  },
-  {
-    name: "nip",
-    label: "NIP",
-    type: "text",
-    placeholder: "Masukan NIP",
-  },
-  {
-    name: "nik",
-    label: "NIK",
-    type: "text",
-    placeholder: "Masukan NIK",
-  },
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    placeholder: "Masukan Email",
-  },
-  {
-    name: "telephone",
-    label: "Nomor Telepon",
-    type: "tel",
-    placeholder: "Masukan No. Telepon",
-  },
-  {
-    name: "tempat_lahir",
-    label: "Tempat Lahir",
-    type: "text",
-    placeholder: "Masukan Tempat Lahir",
-  },
-  {
-    name: "tanggal_lahir",
-    label: "Tanggal Lahir",
-    type: "date",
-    placeholder: "dd-mm-yyyy",
-  },
-  {
-    name: "alamat",
-    label: "Alamat",
-    type: "text",
-    placeholder: "Masukan Alamat",
-  },
-  {
-    name: "kelurahan_id",
-    label: "Kelurahan",
-    type: "select",
-    placeholder: "Pilih Kelurahan",
-  },
-  {
-    name: "npwp",
-    label: "NPWP",
-    type: "text",
-    placeholder: "Masukan NPWP",
-  },
-  {
-    name: "agama_id",
-    label: "Agama",
-    type: "select",
-    placeholder: "Pilih Agama",
-  },
-  {
-    name: "pendidikan_id",
-    label: "Pendidikan",
-    type: "select",
-    placeholder: "Pilih Pendidikan",
-  },
-  {
-    name: "jenis_kelamin_id",
-    label: "Jenis Kelamin",
-    type: "select",
-    placeholder: "Pilih Jenis Kelamin",
-  },
-];
 
 interface PersonalFormProps {
   initialOptions: Record<string, Array<{ value: string; label: string }>>;
@@ -196,7 +115,7 @@ export default function PersonalForm({ initialOptions }: PersonalFormProps) {
         <form onSubmit={onSubmit} className="space-y-6">
           <h1 className="flex gap-1 font-semibold text-2xl">Data Personal </h1>
           <div className="flex flex-col gap-6">
-            {formFields.map((field) => (
+            {personalFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}

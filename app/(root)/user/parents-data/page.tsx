@@ -16,36 +16,9 @@ import React, { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormErrors, FormFieldConfig } from "@/types";
 import { useFormContext } from "@/app/features/onboarding/context";
-import { cn } from "@/lib/utils";
+import { cn, parentFormFields } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { parentsFormAction } from "./actions";
-
-const formFields: FormFieldConfig[] = [
-  {
-    name: "nama_ayah",
-    label: "Nama Lengkap Ayah",
-    type: "text",
-    placeholder: "Masukan Nama Lengkap Ayah",
-  },
-  {
-    name: "nama_ibu",
-    label: "Nama Lengkap Ibu",
-    type: "text",
-    placeholder: "Masukan Nama Lengkap Ibu",
-  },
-  {
-    name: "alamat_ayah",
-    label: "Alamat Ayah",
-    type: "text",
-    placeholder: "Masukan Alamat ayah",
-  },
-  {
-    name: "alamat_ibu",
-    label: "Alamat Ibu",
-    type: "text",
-    placeholder: "Masukan Alamat Ibu",
-  },
-];
 
 const initialState: FormErrors = {};
 
@@ -113,7 +86,7 @@ export default function Parents() {
             </span>
           </h1>
           <div className="flex flex-col gap-6">
-            {formFields.map((field) => (
+            {parentFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}

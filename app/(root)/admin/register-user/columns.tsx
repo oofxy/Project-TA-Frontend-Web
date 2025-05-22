@@ -27,7 +27,7 @@ export const dataRegisterUser: ColumnDef<DataRegisterUser>[] = [
         try {
           await deleteUser(user.id);
           toast.success("User deleted successfully");
-          router.push("/admin/register-user");
+          router.refresh();
         } catch (error) {
           toast.error("Failed to delete user");
           console.error(error);

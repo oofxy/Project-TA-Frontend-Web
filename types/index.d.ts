@@ -42,6 +42,16 @@ export type DataKaryawan = {
   alamat_ibu: string;
 };
 
+export type DataAnak = {
+  id: string;
+  name: string;
+  nik: string;
+  jenis_kelamin_id: string;
+  tempat_lahir: string;
+  tanggal_lahir: string;
+  karyawan_id: string;
+};
+
 export type DataRegisterUser = {
   id: string;
   nama: string;
@@ -157,6 +167,13 @@ declare interface FormFieldConfig {
   type: React.HTMLInputTypeAttribute | "select";
   placeholder?: string;
 }
+
+type FieldConfig = {
+  label: string;
+  name: keyof DataKaryawan;
+  type: "text" | "email" | "date" | "select";
+  required?: boolean;
+};
 
 declare interface SelectOption {
   value: string;

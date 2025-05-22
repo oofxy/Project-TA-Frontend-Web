@@ -1,4 +1,4 @@
-import { DataKaryawan } from "@/types";
+import { DataAnak, DataKaryawan } from "@/types";
 
 export async function getDataKaryawan(): Promise<DataKaryawan[]> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}karyawan`, {
@@ -23,8 +23,40 @@ export async function getDataKaryawan(): Promise<DataKaryawan[]> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  const data = await res.json();
-  return data;
+  return await res.json();
+}
+
+export async function getAnakByKaryawanId(
+  karyawanId: string
+): Promise<DataAnak[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}anak?karyawan_id=${karyawanId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+      },
+    }
+  );
+
+  console.log("Id Karyawan", res);
+
+  // Check for a bad response
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Error response:", errorText);
+    throw new Error(`Failed to fetch User: ${res.status}`);
+  }
+
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON, got:", text);
+    throw new Error("Invalid content type: " + contentType);
+  }
+
+  return await res.json();
 }
 
 export async function patchDataKaryawan(
@@ -39,11 +71,30 @@ export async function patchDataKaryawan(
     },
     body: JSON.stringify(data),
   });
-  // Check for a bad response
   if (!res.ok) {
     const error = await res.text();
     console.log("Error response:", error);
     throw new Error(`Failed to fetch Karyawan: ${res.status}`);
+  }
+}
+
+export async function patchDataAnak(
+  id: string,
+  data: Partial<DataAnak>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}anak/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const error = await res.text();
+    console.error("Error updating child:", error);
+    throw new Error(`Failed to update child: ${res.status}`);
   }
 }
 

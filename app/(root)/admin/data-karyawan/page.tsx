@@ -9,7 +9,9 @@ export default async function DataKaryawan() {
 
   return (
     <div className="flex flex-col h-full">
-      <SearchInput />
+      <div className="px-5 pb-6 pt-2">
+        <SearchInput />
+      </div>
       <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
         <TableData columns={dataKaryawan} data={data} />
       </div>

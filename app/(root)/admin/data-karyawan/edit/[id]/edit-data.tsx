@@ -16,15 +16,7 @@ import {
 import { patchDataKaryawan } from "@/data/data-karyawan";
 import { DataKaryawan } from "@/types";
 import { Loader2 } from "lucide-react";
-
-// Define field types more precisely
-type FieldType = "text" | "email" | "date" | "select";
-type FieldConfig = {
-  label: string;
-  name: keyof DataKaryawan;
-  type: FieldType;
-  required?: boolean;
-};
+import { editFieldGroups } from "@/lib/utils";
 
 const defaultData = (id: string): DataKaryawan => ({
   id,
@@ -59,112 +51,6 @@ const defaultData = (id: string): DataKaryawan => ({
   alamat_ayah: "",
   alamat_ibu: "",
 });
-
-const fieldGroups: { title: string; fields: FieldConfig[] }[] = [
-  {
-    title: "Data Diri",
-    fields: [
-      { label: "Nama", name: "name", type: "text", required: true },
-      { label: "Email", name: "email", type: "email", required: true },
-      { label: "NIP", name: "nip", type: "text", required: true },
-      { label: "NIK", name: "nik", type: "text", required: true },
-      { label: "Telephone", name: "telephone", type: "text", required: true },
-      { label: "Alamat", name: "alamat", type: "text", required: true },
-      { label: "Agama", name: "agama_id", type: "select", required: true },
-      {
-        label: "Tempat Lahir",
-        name: "tempat_lahir",
-        type: "text",
-        required: true,
-      },
-      {
-        label: "Tanggal Lahir",
-        name: "tanggal_lahir",
-        type: "date",
-        required: true,
-      },
-      {
-        label: "Kelurahan",
-        name: "kelurahan_id",
-        type: "select",
-        required: true,
-      },
-      {
-        label: "Pendidikan",
-        name: "pendidikan_id",
-        type: "select",
-        required: true,
-      },
-      { label: "NPWP", name: "npwp", type: "text", required: true },
-      {
-        label: "Jenis Kelamin",
-        name: "jenis_kelamin_id",
-        type: "select",
-        required: true,
-      },
-      {
-        label: "Mulai Tugas",
-        name: "mulai_tugas",
-        type: "date",
-        required: true,
-      },
-      { label: "Pangkat", name: "pangkat_id", type: "select", required: true },
-      { label: "Jabatan", name: "jabatan_id", type: "select", required: true },
-      {
-        label: "Pekerjaan",
-        name: "pekerjaan_id",
-        type: "select",
-        required: true,
-      },
-      {
-        label: "Golongan",
-        name: "golongan_id",
-        type: "select",
-        required: true,
-      },
-      { label: "Divisi", name: "divisi_id", type: "select", required: true },
-      {
-        label: "Lokasi Kantor",
-        name: "lokasi_kantor_id",
-        type: "select",
-        required: true,
-      },
-      {
-        label: "Lokasi Kerja",
-        name: "lokasi_kerja_id",
-        type: "select",
-        required: true,
-      },
-      { label: "Status", name: "status_id", type: "select", required: true },
-    ],
-  },
-  {
-    title: "Data Pasangan",
-    fields: [
-      { label: "Nama Pasangan", name: "nama_pasangan", type: "text" },
-      {
-        label: "Tempat Lahir Pasangan",
-        name: "tempat_lahir_pasangan",
-        type: "text",
-      },
-      {
-        label: "Pekerjaan Pasangan",
-        name: "pekerjaan_id_pasangan",
-        type: "text",
-      },
-      { label: "Telepon Pasangan", name: "telephone_pasangan", type: "text" },
-    ],
-  },
-  {
-    title: "Data Orang Tua",
-    fields: [
-      { label: "Nama Ayah", name: "nama_ayah", type: "text" },
-      { label: "Nama Ibu", name: "nama_ibu", type: "text" },
-      { label: "Alamat Ayah", name: "alamat_ayah", type: "text" },
-      { label: "Alamat Ibu", name: "alamat_ibu", type: "text" },
-    ],
-  },
-];
 
 interface EditDataProps {
   id: string;
@@ -212,7 +98,7 @@ export default function EditData({
     <form onSubmit={handleSubmit} className="space-y-4 max-w-3xl mx-auto py-8">
       <h1 className="text-3xl font-bold pb-6">Edit Data Karyawan</h1>
 
-      {fieldGroups.map(({ title, fields }) => (
+      {editFieldGroups.map(({ title, fields }) => (
         <section
           key={title}
           className="flex flex-col gap-4 border rounded-xl p-6 shadow-sm"
