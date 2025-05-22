@@ -61,7 +61,7 @@ export function TableData<TData, TValue>({
   const pageLink = (index: number) => `${pathname}?page=${index}`;
 
   return (
-    <div className="h-full">
+    <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
       {isClient ? (
         <div className="rounded-md h-full flex flex-col justify-between">
           <Table>

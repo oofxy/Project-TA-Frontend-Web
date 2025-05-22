@@ -1,11 +1,10 @@
-import { Divisi } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Mendapatkan data Divisi
-export async function getDivisi(): Promise<Divisi[]> {
-  const res = await fetch(`${process.env.API_URL}divisi`, {
+export async function getDivisi(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}divisi`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
@@ -27,13 +26,12 @@ export async function getDivisi(): Promise<Divisi[]> {
   return data;
 }
 
-// POST - Menambahkan data Divisi baru
-export async function postDivisi(data: Divisi): Promise<Divisi> {
-  const res = await fetch(`${process.env.API_URL}divisi`, {
+export async function postDivisi(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}divisi`, {
     method: "POST",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -57,16 +55,15 @@ export async function postDivisi(data: Divisi): Promise<Divisi> {
   return createdData;
 }
 
-// PATCH - Mengupdate data Divisi yang sudah ada
 export async function patchDivisi(
   id: string,
-  data: Partial<Divisi>
-): Promise<Divisi> {
-  const res = await fetch(`${process.env.API_URL}divisi/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}divisi/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -90,27 +87,18 @@ export async function patchDivisi(
   return updatedData;
 }
 
-// DELETE - Menghapus data Divisi
 export async function deleteDivisi(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}divisi/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}divisi/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
   // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete Divisi: ${res.status}`);
-  }
-
-  // No content expected in response
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete divisi");
   }
 }

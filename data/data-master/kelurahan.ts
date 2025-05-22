@@ -1,14 +1,14 @@
-import { Kelurahan } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Mengambil semua data Kelurahan
-export async function getKelurahan(): Promise<Kelurahan[]> {
-  const res = await fetch(`${process.env.API_URL}kelurahan`, {
+export async function getKelurahan(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}kelurahan`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -22,21 +22,22 @@ export async function getKelurahan(): Promise<Kelurahan[]> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const data = await res.json();
+  return data;
 }
 
-// POST - Menambahkan data Kelurahan
-export async function postKelurahan(data: Kelurahan): Promise<Kelurahan> {
-  const res = await fetch(`${process.env.API_URL}kelurahan`, {
+export async function postKelurahan(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}kelurahan`, {
     method: "POST",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -50,24 +51,25 @@ export async function postKelurahan(data: Kelurahan): Promise<Kelurahan> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const createdData = await res.json();
+  return createdData;
 }
 
-// PATCH - Mengubah data Kelurahan
 export async function patchKelurahan(
   id: string,
-  data: Partial<Kelurahan>
-): Promise<Kelurahan> {
-  const res = await fetch(`${process.env.API_URL}kelurahan/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}kelurahan/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -81,28 +83,22 @@ export async function patchKelurahan(
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const updatedData = await res.json();
+  return updatedData;
 }
 
-// DELETE - Menghapus data Kelurahan
 export async function deleteKelurahan(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}kelurahan/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}kelurahan/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText); // Log the response text for better debugging
-    throw new Error(`Failed to delete Kelurahan: ${res.status}`);
-  }
-
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Kelurahan");
   }
 }

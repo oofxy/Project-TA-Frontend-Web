@@ -1,14 +1,14 @@
-import { Provinsi } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Ambil semua data Provinsi
-export async function getProvinsi(): Promise<Provinsi[]> {
-  const res = await fetch(`${process.env.API_URL}provinsi`, {
+export async function getProvinsi(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}Test`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -22,73 +22,83 @@ export async function getProvinsi(): Promise<Provinsi[]> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const data = await res.json();
+  return data;
 }
 
-// POST - Tambah data Provinsi
-export async function postProvinsi(data: Provinsi): Promise<Provinsi> {
-  const res = await fetch(`${process.env.API_URL}provinsi`, {
+export async function postProvinsi(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}test`, {
     method: "POST",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
     throw new Error(`Failed to post Provinsi: ${res.status}`);
   }
 
-  return await res.json();
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON, got:", text);
+    throw new Error("Invalid content type: " + contentType);
+  }
+
+  const createdData = await res.json();
+  return createdData;
 }
 
-// PATCH - Edit data Provinsi
 export async function patchProvinsi(
   id: string,
-  data: Partial<Provinsi>
-): Promise<Provinsi> {
-  const res = await fetch(`${process.env.API_URL}provinsi/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}test/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
     throw new Error(`Failed to patch Provinsi: ${res.status}`);
   }
 
-  return await res.json();
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON, got:", text);
+    throw new Error("Invalid content type: " + contentType);
+  }
+
+  const updatedData = await res.json();
+  return updatedData;
 }
 
-// DELETE - Hapus data Provinsi
 export async function deleteProvinsi(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}provinsi/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}provinsi/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete Provinsi: ${res.status}`);
-  }
-
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Provinsi");
   }
 }

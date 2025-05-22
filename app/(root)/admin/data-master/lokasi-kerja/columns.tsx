@@ -1,42 +1,47 @@
 "use client";
 
-import { LokasiKerja } from "@/types";
+import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit2, Trash2 } from "lucide-react";
-import CustomDialoglokasikerja from "./CustomDialogLokasiKerja";
+import { Edit, Trash2 } from "lucide-react";
+import CustomDialog from "./CustomDialog";
+import toast from "react-hot-toast";
+import { deleteLokasiKerja } from "@/data/data-master/lokasi-kerja";
+import { useRouter } from "next/navigation";
 
-
-export const lokasiKerja: ColumnDef<LokasiKerja>[] = [
+export const lokasiKerja: ColumnDef<DataMaster>[] = [
   {
     accessorKey: "name",
     header: "Lokasi Kerja",
   },
   {
-    accessorKey: "actions",
-    header: "Actions",
+    accessorKey: "edit",
+    header: "Edit",
     cell: ({ row }) => {
-      const lokasiKerjaData = row.original;
+      const router = useRouter();
+      const data = row.original;
+      const handleDelete = async () => {
+        try {
+          await deleteLokasiKerja(data.id);
+          toast.success("Lokasi Kerja deleted successfully");
+          router.refresh();
+        } catch (error) {
+          toast.error("Failed to delete Lokasi Kerja");
+          console.error(error);
+        }
+      };
 
       return (
-        <div className="flex flex-row gap-3">
-          <button
-            className="icon cursor-pointer"
-            title="Delete"
-            onClick={() => handleDelete(lokasiKerjaData)}
+        <div className="flex gap-3">
+          <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
+          <CustomDialog
+            mode="edit"
+            id={data.id}
+            initialData={{ name: data.name }}
           >
-            <Trash2 />
-          </button>
-          <CustomDialoglokasikerja lokasiKerja={lokasiKerjaData} mode="edit">
-            <button className="icon cursor-pointer" title="Edit">
-              <Edit2 />
-            </button>
-          </CustomDialoglokasikerja>
+            <Edit className="icon cursor-pointer" />
+          </CustomDialog>
         </div>
       );
     },
   },
 ];
-
-const handleDelete = (lokasiKerjaData: LokasiKerja) => {
-  // implement delete logic here
-};

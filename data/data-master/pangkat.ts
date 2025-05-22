@@ -1,14 +1,14 @@
-import { Pangkat } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Ambil semua data Pangkat
-export async function getPangkat(): Promise<Pangkat[]> {
-  const res = await fetch(`${process.env.API_URL}pangkat`, {
+export async function getPangkat(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}pangkat`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -22,21 +22,22 @@ export async function getPangkat(): Promise<Pangkat[]> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const data = await res.json();
+  return data;
 }
 
-// POST - Tambah data Pangkat
-export async function postPangkat(data: Pangkat): Promise<Pangkat> {
-  const res = await fetch(`${process.env.API_URL}pangkat`, {
+export async function postPangkat(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}pangkat`, {
     method: "POST",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -50,24 +51,25 @@ export async function postPangkat(data: Pangkat): Promise<Pangkat> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const createdData = await res.json();
+  return createdData;
 }
 
-// PATCH - Edit data Pangkat
 export async function patchPangkat(
   id: string,
-  data: Partial<Pangkat>
-): Promise<Pangkat> {
-  const res = await fetch(`${process.env.API_URL}pangkat/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}pangkat/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
@@ -81,28 +83,22 @@ export async function patchPangkat(
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const updatedData = await res.json();
+  return updatedData;
 }
 
-// DELETE - Hapus data Pangkat
 export async function deletePangkat(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}pangkat/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}pangkat/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete Pangkat: ${res.status}`);
-  }
-
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Pangkat");
   }
 }

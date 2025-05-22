@@ -1,18 +1,18 @@
-import { LokasiKantor } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Ambil semua data Lokasi Kantor
-export async function getLokasiKantor(): Promise<LokasiKantor[]> {
-  const res = await fetch(`${process.env.API_URL}lokasi_kantor`, {
+export async function getLokasiKantor(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}lokasi_kantor`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to fetch LokasiKantor: ${res.status}`);
+    throw new Error(`Failed to fetch Lokasi Kantor: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -22,27 +22,26 @@ export async function getLokasiKantor(): Promise<LokasiKantor[]> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const data = await res.json();
+  return data;
 }
 
-// POST - Tambah data Lokasi Kantor
-export async function postLokasiKantor(
-  data: LokasiKantor
-): Promise<LokasiKantor> {
-  const res = await fetch(`${process.env.API_URL}lokasi_kantor`, {
+export async function postLokasiKantor(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}lokasi_kantor`, {
     method: "POST",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to post LokasiKantor: ${res.status}`);
+    throw new Error(`Failed to post Lokasi Kantor: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -52,28 +51,29 @@ export async function postLokasiKantor(
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const createdData = await res.json();
+  return createdData;
 }
 
-// PATCH - Edit data Lokasi Kantor
 export async function patchLokasiKantor(
   id: string,
-  data: Partial<LokasiKantor>
-): Promise<LokasiKantor> {
-  const res = await fetch(`${process.env.API_URL}lokasi_kantor/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}lokasi_kantor/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to patch LokasiKantor: ${res.status}`);
+    throw new Error(`Failed to patch Lokasi Kantor: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -83,28 +83,22 @@ export async function patchLokasiKantor(
     throw new Error("Invalid content type: " + contentType);
   }
 
-  return await res.json();
+  const updatedData = await res.json();
+  return updatedData;
 }
 
-// DELETE - Hapus data Lokasi Kantor
 export async function deleteLokasiKantor(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}lokasi_kantor/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}LokasiKantor/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete LokasiKantor: ${res.status}`);
-  }
-
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Lokasi Kantor");
   }
 }

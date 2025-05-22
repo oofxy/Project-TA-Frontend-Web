@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { postKecamatan, patchKecamatan } from "@/data/data-master/kecamatan";
+import { postLokasiKerja, patchLokasiKerja } from "@/data/data-master/lokasi-kerja";
 import { cn } from "@/lib/utils";
 import { dataMasterSchema, DataMasterSchema } from "@/lib/zod";
 import { CustomDialogProps } from "@/types";
@@ -56,16 +56,16 @@ export default function CustomDialog({
 
     try {
       if (mode === "edit" && id) {
-        await patchKecamatan(id, { name: data.name });
+        await patchLokasiKerja(id, { name: data.name });
       } else {
-        await postKecamatan({
+        await postLokasiKerja({
           name: data.name,
           id: "",
         });
       }
 
       toast.success(
-        `Kecamatan berhasil ${mode === "add" ? "ditambahkan" : "diperbarui"}`
+        `Lokasi Kerja berhasil ${mode === "add" ? "ditambahkan" : "diperbarui"}`
       );
       reset();
       setOpen(false);
@@ -84,17 +84,17 @@ export default function CustomDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="mb-5">
-            {mode === "add" ? "Tambah Kecamatan Baru" : "Edit Kecamatan"}
+            {mode === "add" ? "Tambah Lokasi Kerja Baru" : "Edit Lokasi Kerja"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-6">
           <div className="space-y-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="name">Nama Kecamatan</Label>
+              <Label htmlFor="name">Nama Lokasi Kerja</Label>
               <Input
                 id="name"
-                placeholder="Masukkan nama kecamatan"
+                placeholder="Masukkan nama lokasi kerja"
                 {...register("name")}
                 autoComplete="off"
               />
@@ -120,7 +120,7 @@ export default function CustomDialog({
                   {mode === "add" ? "Menambahkan..." : "Memperbarui..."}
                 </span>
               ) : mode === "add" ? (
-                "Tambah Kecamatan"
+                "Tambah Lokasi Kerja"
               ) : (
                 "Simpan Perubahan"
               )}

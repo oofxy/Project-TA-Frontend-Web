@@ -1,11 +1,14 @@
 "use client";
 
-import { Golongan } from "@/types";
+import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import CustomDialog from "./CustomDialog";
+import toast from "react-hot-toast";
+import { deleteGolongan } from "@/data/data-master/golongan";
+import { useRouter } from "next/navigation";
 
-export const golongan: ColumnDef<Golongan>[] = [
+export const golongan: ColumnDef<DataMaster>[] = [
   {
     accessorKey: "name",
     header: "Golongan",
@@ -14,13 +17,28 @@ export const golongan: ColumnDef<Golongan>[] = [
     accessorKey: "edit",
     header: "Edit",
     cell: ({ row }) => {
-      const golonganData = row.original;
+      const router = useRouter();
+      const data = row.original;
+      const handleDelete = async () => {
+        try {
+          await deleteGolongan(data.id);
+          toast.success("Golongan deleted successfully");
+          router.refresh();
+        } catch (error) {
+          toast.error("Failed to delete golongan");
+          console.error(error);
+        }
+      };
 
       return (
-        <div className="flex flex-row gap-3">
-          <Trash2 className="icon cursor-pointer" />
-          <CustomDialog golongan={golonganData} mode="edit">
-            <Edit2 className="icon cursor-pointer" />
+        <div className="flex gap-3">
+          <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
+          <CustomDialog
+            mode="edit"
+            id={data.id}
+            initialData={{ name: data.name }}
+          >
+            <Edit className="icon cursor-pointer" />
           </CustomDialog>
         </div>
       );

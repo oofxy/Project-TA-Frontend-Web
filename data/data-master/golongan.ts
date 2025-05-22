@@ -1,11 +1,10 @@
-import { Golongan } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Mendapatkan data Golongan
-export async function getGolongan(): Promise<Golongan[]> {
-  const res = await fetch(`${process.env.API_URL}golongan`, {
+export async function getGolongan(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}golongan`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
@@ -27,13 +26,12 @@ export async function getGolongan(): Promise<Golongan[]> {
   return data;
 }
 
-// POST - Menambahkan data Golongan baru
-export async function postGolongan(data: Golongan): Promise<Golongan> {
-  const res = await fetch(`${process.env.API_URL}golongan`, {
+export async function postGolongan(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}golongan`, {
     method: "POST",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -57,16 +55,15 @@ export async function postGolongan(data: Golongan): Promise<Golongan> {
   return createdData;
 }
 
-// PATCH - Mengupdate data Golongan yang sudah ada
 export async function patchGolongan(
   id: string,
-  data: Partial<Golongan>
-): Promise<Golongan> {
-  const res = await fetch(`${process.env.API_URL}golongan/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}golongan/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -90,27 +87,18 @@ export async function patchGolongan(
   return updatedData;
 }
 
-// DELETE - Menghapus data Golongan
 export async function deleteGolongan(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}golongan/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}golongan/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
   // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete Golongan: ${res.status}`);
-  }
-
-  // No content expected in response
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Golongan");
   }
 }

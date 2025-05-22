@@ -1,18 +1,18 @@
-import { JenisIzin } from "@/types";
+import { DataMaster } from "@/types";
 
-// GET - Mengambil semua data Jenis Izin
-export async function getJenisIzin(): Promise<JenisIzin[]> {
-  const res = await fetch(`${process.env.API_URL}jenis_izin`, {
+export async function getJenisIzin(): Promise<DataMaster[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}jenis_izin`, {
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to fetch JenisIzin: ${res.status}`);
+    throw new Error(`Failed to fetch Jenis Izin: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -26,22 +26,22 @@ export async function getJenisIzin(): Promise<JenisIzin[]> {
   return data;
 }
 
-// POST - Menambahkan data Jenis Izin
-export async function postJenisIzin(data: JenisIzin): Promise<JenisIzin> {
-  const res = await fetch(`${process.env.API_URL}jenis_izin`, {
+export async function postJenisIzin(data: DataMaster): Promise<DataMaster> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}jenis_izin`, {
     method: "POST",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to post JenisIzin: ${res.status}`);
+    throw new Error(`Failed to post Jenis Izin: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -51,29 +51,29 @@ export async function postJenisIzin(data: JenisIzin): Promise<JenisIzin> {
     throw new Error("Invalid content type: " + contentType);
   }
 
-  const result = await res.json();
-  return result;
+  const createdData = await res.json();
+  return createdData;
 }
 
-// PATCH - Mengubah data Jenis Izin
 export async function patchJenisIzin(
   id: string,
-  data: Partial<JenisIzin>
-): Promise<JenisIzin> {
-  const res = await fetch(`${process.env.API_URL}jenis_izin/${id}`, {
+  data: Partial<DataMaster>
+): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}jenis_izin/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
       "Content-Type": "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
     },
     body: JSON.stringify(data),
   });
 
+  // Check for a bad response
   if (!res.ok) {
     const errorText = await res.text();
     console.error("Error response:", errorText);
-    throw new Error(`Failed to patch JenisIzin: ${res.status}`);
+    throw new Error(`Failed to patch Jenis Izin: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type");
@@ -83,29 +83,22 @@ export async function patchJenisIzin(
     throw new Error("Invalid content type: " + contentType);
   }
 
-  const updated = await res.json();
-  return updated;
+  const updatedData = await res.json();
+  return updatedData;
 }
 
-// DELETE - Menghapus data Jenis Izin
 export async function deleteJenisIzin(id: string): Promise<void> {
-  const res = await fetch(`${process.env.API_URL}jenis_izin/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}jenis_izin/${id}`, {
     method: "DELETE",
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer 5|C6mDXtULlGWycweq3dp2gwK80ffrO0dhI8aMSLbQf560bed1`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
     },
   });
 
+  // Check for a bad response
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Error response:", errorText);
-    throw new Error(`Failed to delete JenisIzin: ${res.status}`);
-  }
-
-  if (res.status !== 204) {
-    const text = await res.text();
-    console.error("Unexpected response:", text);
-    throw new Error("Expected no content after delete");
+    const error = await res.json();
+    console.log("Error:", error);
+    throw new Error("Failed to delete Jenis Izin");
   }
 }

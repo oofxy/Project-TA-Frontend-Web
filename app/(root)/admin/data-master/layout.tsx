@@ -6,7 +6,7 @@ const layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
+    <div className="h-[92%]">
       {children}
     </div>
   );
