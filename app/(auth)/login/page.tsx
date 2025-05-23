@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,12 +8,16 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
-import { redirect } from "next/navigation";
-import { authFormSchema } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { authFormSchema } from "@/lib/zod";
 import LoginInput from "@/components/LoginInput";
+import { credentialsSignin } from "@/app/actions/actions";
+import toast from "react-hot-toast";
 
-const Login = () => {
+export default function Login() {
+  const [globalError, setGlobalError] = useState<{
+    message: string;
+  } | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof authFormSchema>>({
@@ -24,17 +28,25 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof authFormSchema>) => {
-    console.log(values);
-    if (
-      values.email === "example@gmail.com" &&
-      values.password === "password"
-    ) {
-      redirect("/admin");
-    } else {
-      toast.error("Username atau Password salah");
+  const onSubmit = async (values: z.infer<typeof authFormSchema>) => {
+    setIsLoading(true);
+    try {
+      const result = await credentialsSignin(values);
+      if (result?.message) {
+        setGlobalError({ message: result.message });
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (globalError) {
+      toast.error(globalError.message)
+      console.log(globalError.message);
+    }
+  }, [globalError]);
 
   return (
     <div className="w-full h-screen flex items-center justify-center p-2">
@@ -71,6 +83,4 @@ const Login = () => {
       </Form>
     </div>
   );
-};
-
-export default Login;
+}

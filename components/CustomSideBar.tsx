@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,16 +23,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import { handleSignOut } from "@/app/actions/actions";
+import { Button } from "./ui/button";
 
 const CustomSideBar = () => {
   const pathname = usePathname();
-
-  const [open, setOpen] = useState(false);
-
-  const handleClick = (label: string) => {
-    console.log("Clicked:", label);
-    setOpen(false);
-  };
 
   return (
     <Sidebar>
@@ -54,11 +49,7 @@ const CustomSideBar = () => {
 
                 return index === 1 ? (
                   <SidebarMenu key={item.label}>
-                    <Collapsible
-                      open={open}
-                      onOpenChange={setOpen}
-                      className="group/collapsible"
-                    >
+                    <Collapsible defaultOpen className="group/collapsible">
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton className="h-12 p-3 font-semibold hover:bg-[#e5e5e592] cursor-pointer">
@@ -71,7 +62,6 @@ const CustomSideBar = () => {
                           <SidebarMenuSub className="gap-2 font-medium">
                             {item.dropdownOptions?.map((dropdown) => (
                               <Link
-                                onClick={() => handleClick(dropdown.label)}
                                 key={dropdown.label}
                                 href={dropdown.route}
                                 className="bg-white p-2 hover:bg-[#e5e5e592] rounded-[8px]"
@@ -112,16 +102,15 @@ const CustomSideBar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Link
-          href="/login"
-          key="Log Out"
-          className="flex gap-2.5 p-3 mb-5 rounded-lg transition font-semibold text-[#F05151]"
-        >
-          <div className="relative size-6">
-            <LogOut />
-          </div>
-          <p>Log Out</p>
-        </Link>
+        <form action={handleSignOut}>
+          <Button
+            type="submit"
+            className="flex w-full justify-start shadow-none gap-2.5 p-3 mb-5 text-[1rem] rounded-lg transition font-semibold bg-transparent text-[#F05151]"
+          >
+            <LogOut className="size-[24px]" />
+            Log Out
+          </Button>
+        </form>
       </SidebarFooter>
     </Sidebar>
   );

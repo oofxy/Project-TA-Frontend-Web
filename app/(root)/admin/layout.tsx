@@ -1,5 +1,8 @@
+"use client"
+
 import CustomSideBar from "@/components/CustomSideBar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const layout = ({
@@ -7,6 +10,12 @@ const layout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin/data-karyawan/edit") || pathname?.startsWith("/admin/data-karyawan/view")) {
+    return <>{children}</>;
+  }
+
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full font-inter">
