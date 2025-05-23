@@ -1,6 +1,6 @@
 import { NewForm } from "@/app/features/onboarding/schema";
 
-interface TableDataProps<TData, TValue> {
+declare interface TableDataProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize?: number;
@@ -75,84 +75,10 @@ export type Absensi = {
   status: "Tepat Waktu" | "Terlambat" | "Izin";
 };
 
-export type Pangkat = {
+export type DataMaster = {
   id: string;
-  pangkat: string;
-};
-
-export type Agama = {
-  id: string;
-  agama: string;
-};
-
-export type Pendidikan = {
-  id: string;
-  pendidikan: string;
-};
-
-export type Kelurahan = {
-  id: string;
-  kelurahan: string;
-};
-
-export type Kecamatan = {
-  id: string;
-  kecamatan: string;
-};
-
-export type Kabupaten = {
-  id: string;
-  kabupaten: string;
-};
-
-export type Provinsi = {
-  id: string;
-  provinsi: string;
-};
-
-export type Jabatan = {
-  id: string;
-  jabatan: string;
-};
-
-export type Pekerjaan = {
-  id: string;
-  pekerjaan: string;
-};
-
-export type Golongan = {
-  id: string;
-  golongan: string;
-};
-
-export type StatusAbsensi = {
-  id: string;
-  statusAbsensi: string;
-};
-
-export type Divisi = {
-  id: string;
-  divisi: string;
-};
-
-export type LokasiKantor = {
-  id: string;
-  lokasiKantor: string;
-};
-
-export type LokasiKerja = {
-  id: string;
-  lokasiKerja: string;
-};
-
-export type JenisIzin = {
-  id: string;
-  jenisIzin: string;
-};
-
-export type JenisKelamin = {
-  id: string;
-  jenisKelamin: string;
+  name: string;
+  provinsiId?: string
 };
 
 declare interface TextFieldProps {
@@ -187,4 +113,12 @@ declare interface FormErrors {
 declare interface HeaderProps {
   buttonLabel: string;
   onClick: React.MouseEventHandler;
+}
+
+declare interface CustomDialogProps {
+  id?: string;
+  initialData?: Partial<Agama>;
+  children: React.ReactNode;
+  mode: "add" | "edit";
+  mapData?: DataMaster[];
 }
