@@ -12,7 +12,7 @@ export default async function DataKaryawan() {
       <div className="px-5 pb-6 pt-2">
         <SearchInput />
       </div>
-      <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
+      <div className="w-full h-full bg-[#CDF9EF] rounded-3xl">
         <TableData columns={dataKaryawan} data={data} />
       </div>
     </div>

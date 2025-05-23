@@ -10,7 +10,7 @@ export default async function DataRegisterUser() {
   return (
     <div className="flex flex-col h-full">
       <CustomDialog karyawanData={karyawanData}/>
-      <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
+      <div className="w-full h-full bg-[#CDF9EF] rounded-3xl">
         <TableData columns={dataRegisterUser} data={data} />
       </div>
     </div>

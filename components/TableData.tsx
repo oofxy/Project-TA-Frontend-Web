@@ -117,42 +117,23 @@ export function TableData<TData, TValue>({
 
   return (
     <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
-      {isClient ? (
-        <div className="rounded-md h-full flex flex-col justify-between">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className="">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                  </TableHead>
-                ))}
+      <div className="rounded-md h-full flex flex-col justify-between">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} className="">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -189,60 +170,60 @@ export function TableData<TData, TValue>({
             )}
           </TableBody>
         </Table>
+
+        {totalPages > 1 && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={currentPage > 1 ? pageLink(currentPage - 1) : undefined}
+                  onClick={(e) => {
+                    if (currentPage <= 1) e.preventDefault();
+                  }}
+                  className={
+                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                  }
+                />
+              </PaginationItem>
+
+              {visiblePages.map((page, index) =>
+                page === "..." ? (
+                  <PaginationItem key={`ellipsis-${index}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href={pageLink(page as number)}
+                      onClick={() => handlePageChange(page as number)}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href={
+                    currentPage < totalPages
+                      ? pageLink(currentPage + 1)
+                      : undefined
+                  }
+                  onClick={(e) => {
+                    if (currentPage >= totalPages) e.preventDefault();
+                  }}
+                  className={
+                    currentPage >= totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
-
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href={currentPage > 1 ? pageLink(currentPage - 1) : undefined}
-                onClick={(e) => {
-                  if (currentPage <= 1) e.preventDefault();
-                }}
-                className={
-                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-
-            {visiblePages.map((page, index) =>
-              page === "..." ? (
-                <PaginationItem key={`ellipsis-${index}`}>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              ) : (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    href={pageLink(page as number)}
-                    onClick={() => handlePageChange(page as number)}
-                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            )}
-
-            <PaginationItem>
-              <PaginationNext
-                href={
-                  currentPage < totalPages
-                    ? pageLink(currentPage + 1)
-                    : undefined
-                }
-                onClick={(e) => {
-                  if (currentPage >= totalPages) e.preventDefault();
-                }}
-                className={
-                  currentPage >= totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
     </div>
   );
 }

@@ -54,7 +54,7 @@ export default function ViewData({
         </section>
       ))}
 
-      {children.length > 0 && (
+      {/* {children.length > 0 && (
         <section className="border rounded-xl p-6 shadow-sm">
           <h2 className="text-xl font-semibold mb-4">Data Anak</h2>
           <div className="space-y-6">
@@ -106,7 +106,7 @@ export default function ViewData({
             ))}
           </div>
         </section>
-      )}
+      )} */}
       <div className="flex justify-end">
         <Button
           className="bg-[#17876E]"

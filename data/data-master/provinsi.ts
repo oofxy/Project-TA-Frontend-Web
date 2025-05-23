@@ -1,7 +1,7 @@
 import { DataMaster } from "@/types";
 
 export async function getProvinsi(): Promise<DataMaster[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}Test`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}provinsi`, {
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
@@ -27,7 +27,7 @@ export async function getProvinsi(): Promise<DataMaster[]> {
 }
 
 export async function postProvinsi(data: DataMaster): Promise<DataMaster> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}test`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}provinsi`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -59,7 +59,7 @@ export async function patchProvinsi(
   id: string,
   data: Partial<DataMaster>
 ): Promise<void> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}test/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}provinsi/${id}`, {
     method: "PATCH",
     headers: {
       Accept: "application/json",

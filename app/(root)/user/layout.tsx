@@ -14,7 +14,7 @@ const layout = ({
       </nav>
       <FormContextProvider>
         <div className="flex justify-center w-screen">
-          <div className="rounded-md w-2xl my-10 mx-4">{children}</div>
+          <div className="rounded-md w-2xl mx-4">{children}</div>
         </div>
       </FormContextProvider>
     </div>

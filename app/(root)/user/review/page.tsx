@@ -100,7 +100,7 @@ export default function Review() {
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="flex flex-col w-full gap-6">
+    <form onSubmit={handleFormSubmit} className="flex flex-col w-full mb-10 gap-6">
       <div className="columns-1 md:columns-2 space-y-4">
         {formSections.map((section) => (
           <SectionCard key={section.title} title={section.title}>
