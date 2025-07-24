@@ -1,16 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import List from "@/components/ui/list";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,109 +11,144 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { izinData } from "@/data/izin";
-import { usePathname, useSearchParams } from "next/navigation";
+import List from "@/components/ui/list";
+import { CustomPaginationLite } from "@/components/CustomPaginationLite";
+import { DataIzin } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const IzinPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIzin, setSelectedIzin] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const pathname = usePathname();
-  const limit = 7;
-  const totalPages = Math.ceil(izinData.length / limit);
+export default function IzinPage() {
+  const [izinData, setIzinData] = useState<DataIzin[]>([]);
+  const [selectedIzin, setSelectedIzin] = useState<DataIzin | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const limit = 8;
+  const searchTerm = "";
 
-  const pageLink = (index: number) => `${pathname}?page=${index}`;
+  useEffect(() => {
+    const fetchIzin = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/data/izin");
+        const data = await res.json();
+        setIzinData(data);
+      } catch (error) {
+        console.error("Gagal fetch izin data:", error);
+        toast.error("Gagal mengambil data izin");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredIzin = izinData.filter((izin) =>
-    izin.nama.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    fetchIzin();
+  }, []);
 
-  const handleOpenModal = (izin: any) => {
-    setSelectedIzin(izin);
-    setIsModalOpen(true);
+  const verifyIzin = async (id: string, status: boolean) => {
+    try {
+      const res = await fetch("/api/data/izin/verify", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, status }),
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result?.error || "Gagal memverifikasi izin");
+      }
+
+      toast.success("Izin berhasil diverifikasi");
+      setSelectedIzin(null);
+    } catch (error: any) {
+      console.error("Gagal verifikasi:", error);
+      toast.error(error.message || "Gagal memverifikasi izin");
+    }
   };
 
-  const paginatedIzin = filteredIzin.slice(
+
+  const totalPages = Math.ceil(izinData.length / limit);
+  const paginated = izinData.slice(
     (currentPage - 1) * limit,
     currentPage * limit
   );
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  return (
+  return loading ? (
+    <Skeleton className="h-full w-full rounded-3xl" />
+  ) : (
     <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6 flex flex-col justify-between">
       <div className="flex flex-col gap-2">
-        {paginatedIzin.map((izin, index) => (
-          <a onClick={() => handleOpenModal(izin)} key={index}>
+        {paginated.map((item) => (
+          <button
+            onClick={() => setSelectedIzin(item)}
+            key={item.id}
+            className="text-left"
+          >
             <List
-              nama={izin.nama}
-              kepentingan={izin.kepentingan}
-              tanggal={izin.tanggal}
+              nama={item.user_id.name}
+              kepentingan={item.jenis_izin.name}
+              tanggal={item.tanggal}
+              terverifikasi={
+                item.terverivikasi === null ? "" : item.terverivikasi.toString()
+              }
             />
-          </a>
+          </button>
         ))}
       </div>
 
-      {/* Custom Pagination */}
-      <Pagination>
-        <PaginationContent>
-          <p className="mr-2">Page</p>
-          <PaginationItem hidden={currentPage === 1}>
-            <PaginationPrevious href={pageLink(currentPage - 1)} />
-          </PaginationItem>
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <PaginationItem key={index}>
-              <PaginationLink
-                href={pageLink(index + 1)}
-                isActive={currentPage === index + 1}
-              >
-                {index + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem hidden={currentPage >= totalPages}>
-            <PaginationNext href={pageLink(currentPage + 1)} />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <CustomPaginationLite
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
-      {/* Modal */}
-      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
+      <Dialog open={!!selectedIzin} onOpenChange={() => setSelectedIzin(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Detail Izin</DialogTitle>
           </DialogHeader>
+
           {selectedIzin && (
-            <div className="p-4">
+            <div className="flex flex-col gap-2 p-4">
               <p>
-                <strong>Nama :</strong> {selectedIzin.nama}
+                <strong>Nama:</strong> {selectedIzin.user_id.name}
               </p>
               <p>
-                <strong>Kepentingan :</strong> {selectedIzin.kepentingan}
+                <strong>Alasan:</strong> {selectedIzin.jenis_izin.name}
               </p>
               <p>
-                <strong>Tanggal :</strong> {selectedIzin.tanggal}
+                <strong>Tanggal:</strong> {selectedIzin.tanggal}
               </p>
-              <p className="mt-2">{selectedIzin.deskripsi}</p>
-              <Input type="file" className="mt-4" />
+              <p>
+                <strong>Keterangan:</strong> {selectedIzin.keterangan}
+              </p>
+              <p>
+                <strong>Bukti Foto:</strong>
+              </p>
+              {selectedIzin.bukti_foto ? (
+                <img
+                  src={`${process.env.NEXT_PUBLIC_PATH_URL}${selectedIzin.bukti_foto}`}
+                  alt="Bukti Izin"
+                  className="mt-2 w-full max-h-64 object-contain rounded-lg border"
+                />
+              ) : (
+                <p className="text-sm text-gray-500 mt-2">
+                  Tidak ada foto bukti
+                </p>
+              )}
             </div>
           )}
+
           <DialogFooter>
-            <Button variant="destructive" onClick={handleCloseModal}>
+            <Button
+              variant="destructive"
+              onClick={() => selectedIzin && verifyIzin(selectedIzin.id, false)}
+            >
               Tolak
             </Button>
             <Button
               className="bg-green-500 text-white hover:bg-green-600"
-              onClick={handleCloseModal}
+              onClick={() => selectedIzin && verifyIzin(selectedIzin.id, true)}
             >
               Setuju
             </Button>
@@ -130,6 +157,4 @@ const IzinPage: React.FC = () => {
       </Dialog>
     </div>
   );
-};
-
-export default IzinPage;
+}

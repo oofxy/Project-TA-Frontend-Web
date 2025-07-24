@@ -12,12 +12,13 @@ import { authFormSchema } from "@/lib/zod";
 import LoginInput from "@/components/LoginInput";
 import { credentialsSignin } from "@/app/actions/actions";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [globalError, setGlobalError] = useState<{
     message: string;
   } | null>(null);
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof authFormSchema>>({
@@ -32,9 +33,12 @@ export default function Login() {
     setIsLoading(true);
     try {
       const result = await credentialsSignin(values);
+
       if (result?.message) {
         setGlobalError({ message: result.message });
       }
+
+      router.push("/admin");
     } catch (error) {
     } finally {
       setIsLoading(false);
@@ -43,8 +47,7 @@ export default function Login() {
 
   useEffect(() => {
     if (globalError) {
-      toast.error(globalError.message)
-      console.log(globalError.message);
+      toast.error(globalError.message);
     }
   }, [globalError]);
 

@@ -1,14 +1,18 @@
 "use client";
 
-import { deleteAgama } from "@/data/data-master/agama";
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import CustomDialog from "./CustomDialog";
 
-export const agama: ColumnDef<DataMaster>[] = [
+export const agama = ({
+  fetchData,
+  handleEdit,
+}: {
+  fetchData: () => Promise<void>;
+  handleEdit: (item: DataMaster) => void;
+}): ColumnDef<DataMaster>[] => [
   {
     accessorKey: "name",
     header: "Agama",
@@ -19,10 +23,17 @@ export const agama: ColumnDef<DataMaster>[] = [
     cell: ({ row }) => {
       const router = useRouter();
       const data = row.original;
+
       const handleDelete = async () => {
         try {
-          await deleteAgama(data.id);
+          const res = await fetch(`/api/data/data-master/agama/${data.id}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("Failed to delete");
+
           toast.success("Agama deleted successfully");
+          await fetchData();
           router.refresh();
         } catch (error) {
           toast.error("Failed to delete agama");
@@ -33,13 +44,10 @@ export const agama: ColumnDef<DataMaster>[] = [
       return (
         <div className="flex gap-3">
           <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
-          <CustomDialog
-            mode="edit"
-            id={data.id}
-            initialData={{ name: data.name }}
-          >
-            <Edit className="icon cursor-pointer" />
-          </CustomDialog>
+          <Edit
+            className="icon cursor-pointer"
+            onClick={() => handleEdit(data)}
+          />
         </div>
       );
     },

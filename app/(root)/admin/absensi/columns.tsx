@@ -1,37 +1,79 @@
-"use client"
+"use client";
 
-import { Absensi } from "@/types";
+import { DataAbsensi } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  CheckCircle,
+  Clock,
+  Info,
+  AlertTriangle,
+  HelpCircle,
+} from "lucide-react";
 
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case "Terlambat":
-      return "bg-[#FE9595] text-[#BF2323] px-2 py-1 rounded-lg";
-    case "Tepat Waktu":
-      return "bg-[#A7FAC8] text-[#008205] px-2 py-1 rounded-lg";
-    case "Izin":
-      return "bg-gray-200 text-gray-700 px-2 py-1 rounded-lg";
+function getStatusStyle(status: string) {
+  switch (status.toLowerCase()) {
+    case "tepat waktu":
+      return {
+        className: "bg-green-100 text-green-800",
+        icon: <CheckCircle className="w-4 h-4 mr-1" />,
+      };
+    case "terlambat":
+      return {
+        className: "bg-yellow-100 text-yellow-800",
+        icon: <Clock className="w-4 h-4 mr-1" />,
+      };
+    case "izin":
+      return {
+        className: "bg-blue-100 text-blue-800",
+        icon: <Info className="w-4 h-4 mr-1" />,
+      };
+    case "proses":
+      return {
+        className: "bg-orange-100 text-orange-800",
+        icon: <AlertTriangle className="w-4 h-4 mr-1" />,
+      };
     default:
-      return "bg-gray-200 text-gray-700 px-2 py-1 rounded-lg";
+      return {
+        className: "bg-gray-100 text-gray-800",
+        icon: <HelpCircle className="w-4 h-4 mr-1" />,
+      };
   }
-};
+}
 
-export const absensi: ColumnDef<Absensi>[] = [
+export const absensi: ColumnDef<DataAbsensi>[] = [
   {
-    accessorKey: "nama",
+    accessorKey: "name",
     header: "Nama",
   },
   {
-    accessorKey: "masuk",
+    accessorKey: "tanggal",
+    header: "Tanggal",
+  },
+  {
+    accessorKey: "clock_in_time",
     header: "Masuk",
   },
   {
-    accessorKey: "pulang",
+    accessorKey: "clock_out_time",
     header: "Pulang",
   },
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <span className={`min-w-[100px] inline-block text-center px-3 py-1 rounded-md text-sm font-medium ${getStatusClass(row.original.status)}`}>{row.original.status}</span>,
+    cell: ({ row }) => {
+      const { className, icon } = getStatusStyle(row.original.status);
+
+      return (
+        <span
+          className={`flex items-center justify-center gap-1 min-w-[120px] px-3 py-1 rounded-md text-sm font-medium ${className}`}
+        >
+          {icon}
+          {row.original.status
+            .split(" ")
+            .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+            .join(" ")}
+        </span>
+      );
+    },
   },
 ];

@@ -3,12 +3,16 @@
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
-import CustomDialog from "./CustomDialog";
-import toast from "react-hot-toast";
-import { deletePekerjaan } from "@/data/data-master/pekerjaan";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
-export const pekerjaan: ColumnDef<DataMaster>[] = [
+export const pekerjaan = ({
+  fetchData,
+  handleEdit,
+}: {
+  fetchData: () => Promise<void>;
+  handleEdit: (item: DataMaster) => void;
+}): ColumnDef<DataMaster>[] => [
   {
     accessorKey: "name",
     header: "Pekerjaan",
@@ -19,13 +23,20 @@ export const pekerjaan: ColumnDef<DataMaster>[] = [
     cell: ({ row }) => {
       const router = useRouter();
       const data = row.original;
+
       const handleDelete = async () => {
         try {
-          await deletePekerjaan(data.id);
+          const res = await fetch(`/api/data/data-master/pekerjaan/${data.id}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("Failed to delete");
+
           toast.success("Pekerjaan deleted successfully");
+          await fetchData();
           router.refresh();
         } catch (error) {
-          toast.error("Failed to delete Pekerjaan");
+          toast.error("Failed to delete pekerjaan");
           console.error(error);
         }
       };
@@ -33,13 +44,10 @@ export const pekerjaan: ColumnDef<DataMaster>[] = [
       return (
         <div className="flex gap-3">
           <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
-          <CustomDialog
-            mode="edit"
-            id={data.id}
-            initialData={{ name: data.name }}
-          >
-            <Edit className="icon cursor-pointer" />
-          </CustomDialog>
+          <Edit
+            className="icon cursor-pointer"
+            onClick={() => handleEdit(data)}
+          />
         </div>
       );
     },

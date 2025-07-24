@@ -3,12 +3,16 @@
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
-import CustomDialog from "./CustomDialog";
-import toast from "react-hot-toast";
-import { deleteLokasiKerja } from "@/data/data-master/lokasi-kerja";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
-export const lokasiKerja: ColumnDef<DataMaster>[] = [
+export const lokasiKerja = ({
+  fetchData,
+  handleEdit,
+}: {
+  fetchData: () => Promise<void>;
+  handleEdit: (item: DataMaster) => void;
+}): ColumnDef<DataMaster>[] => [
   {
     accessorKey: "name",
     header: "Lokasi Kerja",
@@ -19,13 +23,20 @@ export const lokasiKerja: ColumnDef<DataMaster>[] = [
     cell: ({ row }) => {
       const router = useRouter();
       const data = row.original;
+
       const handleDelete = async () => {
         try {
-          await deleteLokasiKerja(data.id);
+          const res = await fetch(`/api/data/data-master/lokasi-kerja/${data.id}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("Failed to delete");
+
           toast.success("Lokasi Kerja deleted successfully");
+          await fetchData();
           router.refresh();
         } catch (error) {
-          toast.error("Failed to delete Lokasi Kerja");
+          toast.error("Failed to delete lokasi kerja");
           console.error(error);
         }
       };
@@ -33,13 +44,10 @@ export const lokasiKerja: ColumnDef<DataMaster>[] = [
       return (
         <div className="flex gap-3">
           <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
-          <CustomDialog
-            mode="edit"
-            id={data.id}
-            initialData={{ name: data.name }}
-          >
-            <Edit className="icon cursor-pointer" />
-          </CustomDialog>
+          <Edit
+            className="icon cursor-pointer"
+            onClick={() => handleEdit(data)}
+          />
         </div>
       );
     },

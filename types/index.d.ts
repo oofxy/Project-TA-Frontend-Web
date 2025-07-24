@@ -52,6 +52,32 @@ export type DataAnak = {
   karyawan_id: string;
 };
 
+export type SelectOption = {
+  label: string;
+  value: string | number;
+};
+
+export type SelectOptionMap = {
+  [key: string]: SelectOption[];
+};
+
+export type DataIzin = {
+  id: string;
+  user_id: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  jenis_izin: {
+    id: string;
+    name: string;
+  };
+  keterangan: string;
+  bukti_foto: string | null;
+  tanggal: string;
+  terverivikasi: boolean | null;
+};
+
 export type DataRegisterUser = {
   id: string;
   nama: string;
@@ -67,18 +93,18 @@ interface PaginationProps {
   setCurrentPage: any;
 }
 
-export type Absensi = {
-  id: number;
-  nama: string;
-  masuk: string;
-  pulang: string;
+export type DataAbsensi = {
+  id: string;
+  name: string;
+  clock_in_time: string;
+  clock_out_time: string;
   status: "Tepat Waktu" | "Terlambat" | "Izin";
 };
 
 export type DataMaster = {
   id: string;
   name: string;
-  provinsiId?: string
+  provinsiId?: string;
 };
 
 declare interface TextFieldProps {
@@ -101,11 +127,6 @@ type FieldConfig = {
   required?: boolean;
 };
 
-declare interface SelectOption {
-  value: string;
-  label: string;
-}
-
 declare interface FormErrors {
   [key: string]: string | undefined;
 }
@@ -121,4 +142,15 @@ declare interface CustomDialogProps {
   children: React.ReactNode;
   mode: "add" | "edit";
   mapData?: DataMaster[];
+  onSuccess?: () => void;
+}
+
+declare interface DoughnutChartProps {
+  gender: number[];
+}
+
+declare interface Karyawan {
+  id: number;
+  name: string;
+  gender: "pria" | "wanita";
 }

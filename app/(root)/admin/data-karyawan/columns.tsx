@@ -39,18 +39,9 @@ export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
 
       return (
         <div className="flex flex-row gap-2">
-          <UserMinus
-            className="cursor-pointer hover:text-red-700"
-            onClick={() => {}}
-          />
-          <UserPen
-            className="cursor-pointer hover:text-yellow-700"
-            onClick={handleEdit}
-          />
-          <Ellipsis
-            className="cursor-pointer hover:text-green-700"
-            onClick={handleViewData}
-          />
+          {/* <UserMinus className="cursor-pointer" onClick={() => {}} /> */}
+          <UserPen className="cursor-pointer" onClick={handleEdit} />
+          <Ellipsis className="cursor-pointer" onClick={handleViewData} />
         </div>
       );
     },

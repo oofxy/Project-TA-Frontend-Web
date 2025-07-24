@@ -8,12 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export enum FormDataRoutes {
-  PERSONAL_DATA = "/user/personal-data",
-  WORK_DATA = "/user/work-data",
-  PARTNER_DATA = "/user/partner-data",
-  PARENT_DATA = "/user/parents-data",
-  CHILDREN_DATA = "/user/children-data",
-  REVIEW_DATA = "/user/review",
+  PERSONAL_DATA = "/form/personal-data",
+  WORK_DATA = "/form/work-data",
+  PARTNER_DATA = "/form/partner-data",
+  PARENT_DATA = "/form/parents-data",
+  CHILDREN_DATA = "/form/children-data",
+  REVIEW_DATA = "/form/review",
 }
 
 export const viewFieldGroups = [
@@ -284,13 +284,13 @@ export const personalFormFields: FormFieldConfig[] = [
   },
   {
     name: "nip",
-    label: "NIP",
+    label: "NIP (Nomor Induk Pegawai)",
     type: "text",
     placeholder: "Masukan NIP",
   },
   {
     name: "nik",
-    label: "NIK",
+    label: "NIK (Nomor Induk Kependudukan)",
     type: "text",
     placeholder: "Masukan NIK",
   },
@@ -319,22 +319,10 @@ export const personalFormFields: FormFieldConfig[] = [
     placeholder: "dd-mm-yyyy",
   },
   {
-    name: "alamat",
-    label: "Alamat",
-    type: "text",
-    placeholder: "Masukan Alamat",
-  },
-  {
-    name: "kelurahan_id",
-    label: "Kelurahan",
+    name: "jenis_kelamin_id",
+    label: "Jenis Kelamin",
     type: "select",
-    placeholder: "Pilih Kelurahan",
-  },
-  {
-    name: "npwp",
-    label: "NPWP",
-    type: "text",
-    placeholder: "Masukan NPWP",
+    placeholder: "Pilih Jenis Kelamin",
   },
   {
     name: "agama_id",
@@ -349,10 +337,40 @@ export const personalFormFields: FormFieldConfig[] = [
     placeholder: "Pilih Pendidikan",
   },
   {
-    name: "jenis_kelamin_id",
-    label: "Jenis Kelamin",
+    name: "npwp",
+    label: "NPWP (Nomor Pokok Wajib Pajak)",
+    type: "text",
+    placeholder: "Masukan NPWP",
+  },
+  {
+    name: "alamat",
+    label: "Alamat",
+    type: "text",
+    placeholder: "Masukan Alamat",
+  },
+  {
+    name: "provinsi_id",
+    label: "Provinsi",
     type: "select",
-    placeholder: "Pilih Jenis Kelamin",
+    placeholder: "Pilih Provinsi",
+  },
+  {
+    name: "kabupaten_id",
+    label: "Kabupaten",
+    type: "select",
+    placeholder: "Pilih Kabupaten",
+  },
+  {
+    name: "kecamatan_id",
+    label: "Kecamatan",
+    type: "select",
+    placeholder: "Pilih Kecamatan",
+  },
+  {
+    name: "kelurahan_id",
+    label: "Kelurahan",
+    type: "select",
+    placeholder: "Pilih Kelurahan",
   },
 ];
 

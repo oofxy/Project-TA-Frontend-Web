@@ -2,13 +2,17 @@
 
 import { DataMaster } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, Edit2, Trash2 } from "lucide-react";
-import CustomDialog from "./CustomDialog";
-import toast from "react-hot-toast";
+import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { deleteJenisIzin } from "@/data/data-master/jenis-izin";
+import toast from "react-hot-toast";
 
-export const jenisIzin: ColumnDef<DataMaster>[] = [
+export const jenisIzin = ({
+  fetchData,
+  handleEdit,
+}: {
+  fetchData: () => Promise<void>;
+  handleEdit: (item: DataMaster) => void;
+}): ColumnDef<DataMaster>[] => [
   {
     accessorKey: "name",
     header: "Jenis Izin",
@@ -19,13 +23,20 @@ export const jenisIzin: ColumnDef<DataMaster>[] = [
     cell: ({ row }) => {
       const router = useRouter();
       const data = row.original;
+
       const handleDelete = async () => {
         try {
-          await deleteJenisIzin(data.id);
+          const res = await fetch(`/api/data/data-master/jenis-izin/${data.id}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("Failed to delete");
+
           toast.success("Jenis Izin deleted successfully");
+          await fetchData();
           router.refresh();
         } catch (error) {
-          toast.error("Failed to delete jenis izin");
+          toast.error("Failed to delete jenis_izin");
           console.error(error);
         }
       };
@@ -33,13 +44,10 @@ export const jenisIzin: ColumnDef<DataMaster>[] = [
       return (
         <div className="flex gap-3">
           <Trash2 className="icon cursor-pointer" onClick={handleDelete} />
-          <CustomDialog
-            mode="edit"
-            id={data.id}
-            initialData={{ name: data.name }}
-          >
-            <Edit className="icon cursor-pointer" />
-          </CustomDialog>
+          <Edit
+            className="icon cursor-pointer"
+            onClick={() => handleEdit(data)}
+          />
         </div>
       );
     },

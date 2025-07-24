@@ -3,7 +3,10 @@
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
+  ColumnFiltersState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -13,96 +16,48 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { TableDataProps } from "@/types";
+import { CustomPagination } from "./CustomPagination";
+import { Input } from "./ui/input";
 
 export function TableData<TData, TValue>({
   columns,
   data,
-  pageSize = 10,
+
+  pageSize = 8,
   isLoading = false,
   onRowClick,
-}: TableDataProps<TData, TValue>) {
-  const router = useRouter();
+}: TableDataProps<TData, TValue> & { searchColumn?: string }) {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageLink = (page: number) => `${pathname}?page=${page}`;
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const { paginatedData, totalPages } = useMemo(() => {
-    const totalPages = Math.ceil(data.length / pageSize);
-    const paginatedData = data.slice(
-      (currentPage - 1) * pageSize,
-      currentPage * pageSize
-    );
-    return { paginatedData, totalPages };
-  }, [data, currentPage, pageSize]);
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    state: {
+      columnFilters,
+    },
+    initialState: {
+      pagination: {
+        pageSize,
+      },
+    },
+  });
 
   useEffect(() => {
     setIsMounted(true);
     const page = Number(searchParams.get("page")) || 1;
-    setCurrentPage(Math.min(Math.max(page, 1), totalPages || 1));
-  }, [searchParams, totalPages]);
-
-  const handlePageChange = (page: number) => {
-    const newPage = Math.min(Math.max(page, 1), totalPages || 1);
-    setCurrentPage(newPage);
-    router.push(`${pathname}?page=${newPage}`);
-  };
-
-  const table = useReactTable({
-    data: paginatedData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  const visiblePages = useMemo(() => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const leftEllipsis = currentPage > 3;
-      const rightEllipsis = currentPage < totalPages - 2;
-
-      if (leftEllipsis && rightEllipsis) {
-        pages.push(1);
-        pages.push("...");
-        pages.push(currentPage - 1, currentPage, currentPage + 1);
-        pages.push("...");
-        pages.push(totalPages);
-      } else if (leftEllipsis) {
-        pages.push(1);
-        pages.push("...");
-        for (let i = totalPages - 3; i <= totalPages; i++) {
-          pages.push(i);
-        }
-      } else if (rightEllipsis) {
-        for (let i = 1; i <= 3; i++) {
-          pages.push(i);
-        }
-        pages.push("...");
-        pages.push(totalPages);
-      }
-    }
-
-    return pages;
-  }, [currentPage, totalPages]);
+    setCurrentPage(Math.min(Math.max(page, 1), table.getPageCount() || 1));
+  }, [searchParams, table]);
 
   if (!isMounted || isLoading) {
     return (
@@ -116,15 +71,23 @@ export function TableData<TData, TValue>({
   }
 
   return (
-    <div className="w-full h-full bg-[#CDF9EF] rounded-3xl p-6">
-      <div className="rounded-md h-full flex flex-col justify-between">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} className="">
+    <div className="w-full h-full rounded-3xl p-6 bg-[#CDF9EF]">
+      <div className="rounded-md flex flex-col h-full justify-between">
+        <div className="flex flex-col space-y-2">
+          <Input
+            placeholder="Search name..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="bg-white w-3xs"
+          />
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -132,97 +95,46 @@ export function TableData<TData, TValue>({
                             header.getContext()
                           )}
                     </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => onRowClick?.(row.original)}
-                  className={
-                    onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
-                  }
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
-        {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href={currentPage > 1 ? pageLink(currentPage - 1) : undefined}
-                  onClick={(e) => {
-                    if (currentPage <= 1) e.preventDefault();
-                  }}
-                  className={
-                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
-
-              {visiblePages.map((page, index) =>
-                page === "..." ? (
-                  <PaginationItem key={`ellipsis-${index}`}>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                ) : (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      href={pageLink(page as number)}
-                      onClick={() => handlePageChange(page as number)}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => onRowClick?.(row.original)}
+                    className={
+                      onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-12 text-center"
+                  >
+                    No results found
+                  </TableCell>
+                </TableRow>
               )}
+            </TableBody>
+          </Table>
+        </div>
 
-              <PaginationItem>
-                <PaginationNext
-                  href={
-                    currentPage < totalPages
-                      ? pageLink(currentPage + 1)
-                      : undefined
-                  }
-                  onClick={(e) => {
-                    if (currentPage >= totalPages) e.preventDefault();
-                  }}
-                  className={
-                    currentPage >= totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+        <CustomPagination table={table} />
       </div>
     </div>
   );

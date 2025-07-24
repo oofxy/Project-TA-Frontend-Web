@@ -11,7 +11,9 @@ export class CustomAuthError extends AuthError {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Credentials({
       credentials: {
@@ -24,42 +26,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       authorize: async (credentials) => {
-        // validate credentials
         const parsedCredentials = authFormSchema.safeParse(credentials);
 
         if (!parsedCredentials.success) {
-          console.error("Invalid credentials", parsedCredentials.error.errors);
+          console.log(
+            "Zod validation failed:",
+            parsedCredentials.error.format()
+          );
           return null;
         }
 
-        //get user from database
         const { email, password } = parsedCredentials.data;
 
         try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              password,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include",
           });
 
-          const user = await res.json();
+          const data = await res.json();
 
-          if (!res.ok) {
-            console.error("Login failed", res.statusText);
+          console.log("🧪 DATA FROM LOGIN API", data);
+
+          if (!res.ok || !data.access_token) {
+            console.error("Login failed:", data.message || "No access token");
             return null;
           }
 
-          if (!user) {
-            throw new CustomAuthError("CredentialsSignin");
-          }
-
-          return user;
-        } catch (error: any) {}
+          return {
+            id: data.user_id,
+            name: data.name,
+            email,
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+          };
+        } catch (e) {
+          console.error("Login error caught:", e);
+          throw new CustomAuthError("Internal Server Error");
+        }
       },
     }),
   ],
@@ -75,19 +81,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth;
     },
 
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
+      console.log("🧠 JWT callback received user:", user);
+
       if (user) {
-        token.id = user.id as string;
+        token.id = user.id || token.id;
+        token.accessToken = user.accessToken || token.accessToken;
+        token.refreshToken = user.refreshToken || token.refreshToken;
       }
+
+      if (trigger === "update" && session?.user) {
+        return {
+          ...token,
+          ...session.user,
+        };
+      }
+      console.log("🧠 JWT token final:", token);
       return token;
     },
 
     session({ session, token }) {
-      session.user.id = token.id;
+      console.log("🧠 Token in session callback", token);
+      session.user.id = token.id ?? "";
+      session.accessToken = token.accessToken;
+      session.user.refreshToken = token.refreshToken;
       return session;
     },
   },
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 });

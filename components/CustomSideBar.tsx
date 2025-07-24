@@ -46,10 +46,12 @@ const CustomSideBar = () => {
             <SidebarMenu className="flex flex-col gap-2">
               {adminSidebarLinks.map((item, index) => {
                 const isActive = pathname === item.route;
-
                 return index === 1 ? (
                   <SidebarMenu key={item.label}>
-                    <Collapsible defaultOpen className="group/collapsible">
+                    <Collapsible
+                      defaultOpen={false}
+                      className="group/collapsible"
+                    >
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton className="h-12 p-3 font-semibold hover:bg-[#e5e5e592] cursor-pointer">

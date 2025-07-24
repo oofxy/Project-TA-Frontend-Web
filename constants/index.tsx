@@ -11,10 +11,6 @@ export const adminSidebarLinks = [
     route: "/admin/data-master",
     label: "Data Master",
     dropdownOptions: [
-      { label: "Kelurahan", route: "/admin/data-master/kelurahan" },
-      { label: "Kecamatan", route: "/admin/data-master/kecamatan" },
-      { label: "Kabupaten", route: "/admin/data-master/kabupaten" },
-      { label: "Provinsi", route: "/admin/data-master/provinsi" },
       { label: "Pendidikan", route: "/admin/data-master/pendidikan" },
       { label: "Pangkat", route: "/admin/data-master/pangkat" },
       { label: "Jabatan", route: "/admin/data-master/jabatan" },
@@ -54,38 +50,38 @@ export const adminSidebarLinks = [
 export const formStepLinks = [
   {
     icon: 1,
-    route: "/user/personal-data",
+    route: "/form/personal-data",
     label: "Data Diri",
-    step: "Step 1"
+    step: "Step 1",
   },
   {
     icon: 2,
-    route: "/user/work-data",
+    route: "/form/work-data",
     label: "Data Pekerjaan",
-    step: "Step 2"
+    step: "Step 2",
   },
   {
     icon: 3,
-    route: "/user/partner-data",
+    route: "/form/partner-data",
     label: "Data Pasangan",
-    step: "Step 3"
+    step: "Step 3",
   },
   {
     icon: 4,
-    route: "/user/parents-data",
+    route: "/form/parents-data",
     label: "Data Orang Tua",
-    step: "Step 4"
+    step: "Step 4",
   },
   {
     icon: 5,
-    route: "/user/children-data",
+    route: "/form/children-data",
     label: "Data Anak",
-    step: "Step 5"
+    step: "Step 5",
   },
   {
     icon: 6,
-    route: "/user/review",
+    route: "/form/review",
     label: "Review",
-    step: "Step 6"
+    step: "Step 6",
   },
 ];

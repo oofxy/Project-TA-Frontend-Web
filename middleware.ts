@@ -18,6 +18,8 @@ export async function middleware(req: NextRequest) {
   if (isLoggedin && pathname.startsWith("/login")) {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
