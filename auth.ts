@@ -48,8 +48,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const data = await res.json();
 
-          console.log("🧪 DATA FROM LOGIN API", data);
-
           if (!res.ok || !data.access_token) {
             console.error("Login failed:", data.message || "No access token");
             return null;
@@ -82,8 +80,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     jwt({ token, user, trigger, session }) {
-      console.log("🧠 JWT callback received user:", user);
-
       if (user) {
         token.id = user.id || token.id;
         token.accessToken = user.accessToken || token.accessToken;
@@ -96,12 +92,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ...session.user,
         };
       }
-      console.log("🧠 JWT token final:", token);
       return token;
     },
 
     session({ session, token }) {
-      console.log("🧠 Token in session callback", token);
       session.user.id = token.id ?? "";
       session.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;

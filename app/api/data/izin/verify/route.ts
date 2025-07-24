@@ -4,10 +4,17 @@ import { createAxiosWithAuth } from "@/lib/axiosAuth";
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, status } = body;
+    const { id, verification } = body;
+    if (!id || (verification !== "disetujui" && verification !== "ditolak")) {
+      return NextResponse.json(
+        { success: false, error: "ID dan verification harus valid" },
+        { status: 400 }
+      );
+    }
 
     const axios = await createAxiosWithAuth();
-    await axios.patch(`izin/${id}/verify`, { terverivikasi: status });
+    const terverifikasi = verification ? "disetujui" : "ditolak";
+    await axios.patch(`izin/${id}/verify`, { terverifikasi });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -43,14 +43,16 @@ export default function IzinPage() {
     fetchIzin();
   }, []);
 
-  const verifyIzin = async (id: string, status: boolean) => {
+  const verifyIzin = async (id: string, accepted: boolean) => {
     try {
+      const verification = accepted ? "disetujui" : "ditolak";
+
       const res = await fetch("/api/data/izin/verify", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, verification }),
       });
 
       const result = await res.json();
@@ -65,7 +67,6 @@ export default function IzinPage() {
       toast.error(error.message || "Gagal memverifikasi izin");
     }
   };
-
 
   const totalPages = Math.ceil(izinData.length / limit);
   const paginated = izinData.slice(

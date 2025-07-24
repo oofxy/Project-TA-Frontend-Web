@@ -38,7 +38,6 @@ export const createAxiosWithAuth = async () => {
     throw new Error("No valid session, redirected to login.");
   }
 
-  console.log("🔐 [INIT] Current accessToken:", accessToken);
 
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -57,37 +56,24 @@ export const createAxiosWithAuth = async () => {
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         if (isRefreshing) {
-          console.log("🕒 Waiting for ongoing refresh to finish...");
           return new Promise((resolve) => {
             subscribeTokenRefresh((newToken: string) => {
-              console.log("✅ Received refreshed token from queue:", newToken);
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               resolve(instance(originalRequest));
             });
           });
         }
 
-        console.log("🔥 Refresh token triggered!");
-        console.log("👉 Old access token:", accessToken);
-        console.log(
-          "👉 Request URL that triggered refresh:",
-          originalRequest.url
-        );
 
         isRefreshing = true;
 
         try {
           const session = await auth();
-          console.log("🧪 Session:", session);
           const refreshToken = session?.user?.refreshToken;
 
           if (!refreshToken)
             throw new Error("No refresh token found in session");
 
-          console.log(
-            "🔄 [Before Refresh] Session token:",
-            session?.accessToken
-          );
 
           const refreshResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}refresh-token`,
@@ -109,11 +95,9 @@ export const createAxiosWithAuth = async () => {
 
           const refreshData = await refreshResponse.json();
 
-          console.log("📦 Refresh response:", refreshData);
           const newToken = refreshData?.access_token;
           const newRefreshToken = refreshData?.refresh_token;
 
-          console.log("✅ [Refreshed] New access token:", newToken);
 
           accessToken = newToken;
           refreshed = true;
