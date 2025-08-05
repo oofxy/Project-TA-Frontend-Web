@@ -1,6 +1,6 @@
 "use client";
 
-import { DataMaster } from "@/types";
+import { LokasiKantor } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,8 @@ export const lokasiKantor = ({
   handleEdit,
 }: {
   fetchData: () => Promise<void>;
-  handleEdit: (item: DataMaster) => void;
-}): ColumnDef<DataMaster>[] => [
+  handleEdit: (item: LokasiKantor) => void;
+}): ColumnDef<LokasiKantor>[] => [
   {
     accessorKey: "name",
     header: "Lokasi Kantor",
@@ -26,9 +26,12 @@ export const lokasiKantor = ({
 
       const handleDelete = async () => {
         try {
-          const res = await fetch(`/api/data/data-master/lokasi-kantor/${data.id}`, {
-            method: "DELETE",
-          });
+          const res = await fetch(
+            `/api/data/data-master/lokasi-kantor/${data.id}`,
+            {
+              method: "DELETE",
+            }
+          );
 
           if (!res.ok) throw new Error("Failed to delete");
 

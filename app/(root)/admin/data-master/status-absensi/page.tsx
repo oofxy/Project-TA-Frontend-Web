@@ -107,7 +107,7 @@ export default function StatusAbsensiPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit status absensi" : "Tambah status absensi"}
+              Tambah data status absensi
             </Button>
           </DialogTrigger>
           <DialogContent>

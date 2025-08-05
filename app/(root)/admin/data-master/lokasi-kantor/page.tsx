@@ -13,8 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { dataMasterSchema, DataMasterSchema } from "@/lib/zod";
-import { DataMaster } from "@/types";
+import {
+  dataMasterSchema,
+  DataMasterSchema,
+  lokasiKantorSchema,
+  LokasiKantorSchema,
+} from "@/lib/zod";
+import { DataMaster, LokasiKantor } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -23,7 +28,7 @@ import { lokasiKantor } from "./columns";
 import { TableData } from "@/components/TableData";
 
 export default function LokasiKantorPage() {
-  const [data, setData] = useState<DataMaster[]>([]);
+  const [data, setData] = useState<LokasiKantor[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [id, setid] = useState<string | null>(null);
@@ -35,9 +40,9 @@ export default function LokasiKantorPage() {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<DataMasterSchema>({
-    resolver: zodResolver(dataMasterSchema),
-    defaultValues: { name: "" },
+  } = useForm<LokasiKantorSchema>({
+    resolver: zodResolver(lokasiKantorSchema),
+    defaultValues: { name: "", alamat: "", latitude: "", longitude: "" },
     mode: "onChange",
   });
 
@@ -55,18 +60,25 @@ export default function LokasiKantorPage() {
     }
   };
 
-  const onSubmit = async (formData: DataMasterSchema) => {
+  const onSubmit = async (formData: LokasiKantorSchema) => {
     setIsSubmitting(true);
     const method = id ? "PATCH" : "POST";
     const url = id
       ? `/api/data/data-master/lokasi-kantor/${id}`
       : "/api/data/data-master/lokasi-kantor";
 
+    const payload = {
+      name: formData.name,
+      alamat: formData.alamat,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+    };
+
     try {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Failed to save data");
@@ -85,9 +97,12 @@ export default function LokasiKantorPage() {
     }
   };
 
-  const handleEdit = (item: DataMaster) => {
+  const handleEdit = (item: LokasiKantor) => {
     setid(item.id);
     setValue("name", item.name);
+    setValue("alamat", item.alamat);
+    setValue("latitude", item.latitude?.toString() || "");
+    setValue("longitude", item.longitude?.toString() || "");
     setOpen(true);
   };
 
@@ -107,7 +122,7 @@ export default function LokasiKantorPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit lokasi kantor" : "Tambah lokasi kantor"}
+              Tambah data lokasi kantor
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -118,16 +133,59 @@ export default function LokasiKantorPage() {
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="name">Nama lokasi kantor</Label>
+                <Label htmlFor="name">Daerah kantor</Label>
                 <Input
                   id="name"
-                  placeholder="Masukkan nama lokasi kantor"
+                  placeholder="Masukan daerah kantor"
                   {...register("name")}
                 />
                 {errors.name && (
                   <p className="text-sm text-red-500">{errors.name.message}</p>
                 )}
               </div>
+
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="alamat">Alamat kantor</Label>
+                <Input
+                  id="alamat"
+                  placeholder="Masukan alamat kantor"
+                  {...register("alamat")}
+                />
+                {errors.alamat && (
+                  <p className="text-sm text-red-500">
+                    {errors.alamat.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="latitude">Latitude</Label>
+                <Input
+                  id="latiude"
+                  placeholder="-6.200000"
+                  {...register("latitude")}
+                />
+                {errors.latitude && (
+                  <p className="text-sm text-red-500">
+                    {errors.latitude.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="longitude">Longitude</Label>
+                <Input
+                  id="longitude"
+                  placeholder="106.816666"
+                  {...register("longitude")}
+                />
+                {errors.longitude && (
+                  <p className="text-sm text-red-500">
+                    {errors.longitude.message}
+                  </p>
+                )}
+              </div>
+
               <DialogFooter>
                 <Button
                   type="submit"

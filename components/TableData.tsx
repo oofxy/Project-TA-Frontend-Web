@@ -16,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { TableDataProps } from "@/types";
@@ -27,11 +26,10 @@ export function TableData<TData, TValue>({
   columns,
   data,
 
-  pageSize = 8,
+  pageSize = 9,
   isLoading = false,
   onRowClick,
 }: TableDataProps<TData, TValue> & { searchColumn?: string }) {
-  const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -39,6 +37,7 @@ export function TableData<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -55,9 +54,12 @@ export function TableData<TData, TValue>({
 
   useEffect(() => {
     setIsMounted(true);
-    const page = Number(searchParams.get("page")) || 1;
+    const page =
+      typeof window !== "undefined"
+        ? Number(new URLSearchParams(window.location.search).get("page"))
+        : 1;
     setCurrentPage(Math.min(Math.max(page, 1), table.getPageCount() || 1));
-  }, [searchParams, table]);
+  }, [table]);
 
   if (!isMounted || isLoading) {
     return (

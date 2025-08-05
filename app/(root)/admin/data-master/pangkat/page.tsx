@@ -105,7 +105,7 @@ export default function PangkatPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit pangkat" : "Tambah pangkat"}
+              Tambah data pangkat
             </Button>
           </DialogTrigger>
           <DialogContent>

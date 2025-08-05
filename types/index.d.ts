@@ -96,8 +96,10 @@ interface PaginationProps {
 export type DataAbsensi = {
   id: string;
   name: string;
+  tanggal: string;
   clock_in_time: string;
   clock_out_time: string;
+  bukti_foto: string;
   status: "Tepat Waktu" | "Terlambat" | "Izin";
 };
 
@@ -105,6 +107,14 @@ export type DataMaster = {
   id: string;
   name: string;
   provinsiId?: string;
+};
+
+export type LokasiKantor = {
+  id: string;
+  name: string;
+  alamat: string;
+  latitude: number;
+  longitude: number;
 };
 
 declare interface TextFieldProps {

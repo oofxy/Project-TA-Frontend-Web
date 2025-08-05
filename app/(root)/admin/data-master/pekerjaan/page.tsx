@@ -105,7 +105,7 @@ export default function PekerjaanPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit pekerjaan" : "Tambah pekerjaan"}
+              Tambah data pekerjaan
             </Button>
           </DialogTrigger>
           <DialogContent>

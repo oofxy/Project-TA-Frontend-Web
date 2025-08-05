@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown, Loader2 } from "lucide-react";
 
-import { createAxiosWithAuth } from "@/lib/axiosAuth";
-import { fetchWithRetry } from "@/lib/fetchWithRetry";
 import { userFormSchema, FormSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { DataKaryawan } from "@/types";

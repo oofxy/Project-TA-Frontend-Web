@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Ellipsis, UserMinus, UserPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export const dataKaryawan: ColumnDef<DataKaryawan>[] = [
+export const karyawan: ColumnDef<DataKaryawan>[] = [
   {
     accessorKey: "name",
     header: "Nama",

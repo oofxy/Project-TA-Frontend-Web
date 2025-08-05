@@ -13,12 +13,13 @@ export async function PATCH(req: NextRequest) {
     }
 
     const axios = await createAxiosWithAuth();
-    const terverifikasi = verification ? "disetujui" : "ditolak";
-    await axios.patch(`izin/${id}/verify`, { terverifikasi });
+    console.log("Sending payload =>", { terverifikasi: verification });
+    await axios.patch(`izin/${id}/verify`, { terverifikasi: verification });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Verification error:", error);
+    console.error("Verification error:", error.response?.status);
+    console.error("Backend response:", error.response?.data);
     return NextResponse.json(
       { success: false, error: error?.message || "Unknown error" },
       { status: 500 }

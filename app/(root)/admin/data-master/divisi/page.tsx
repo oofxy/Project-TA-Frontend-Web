@@ -105,7 +105,7 @@ export default function DivisiPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit divisi" : "Tambah divisi"}
+              ambah data divisi
             </Button>
           </DialogTrigger>
           <DialogContent>

@@ -2,6 +2,7 @@
 
 import { DataAbsensi } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { Image } from "lucide-react";
 import {
   CheckCircle,
   Clock,
@@ -40,7 +41,9 @@ function getStatusStyle(status: string) {
   }
 }
 
-export const absensi: ColumnDef<DataAbsensi>[] = [
+export const absensi = (
+  handlePhotoClick: (url: string) => void
+): ColumnDef<DataAbsensi>[] => [
   {
     accessorKey: "name",
     header: "Nama",
@@ -73,6 +76,22 @@ export const absensi: ColumnDef<DataAbsensi>[] = [
             .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
             .join(" ")}
         </span>
+      );
+    },
+  },
+  {
+    accessorKey: "bukti_foto",
+    header: "Foto",
+    cell: ({ row }) => {
+      const imageUrl = row.original.bukti_foto;
+
+      return imageUrl ? (
+        <Image
+          className="cursor-pointer w-4 h-4"
+          onClick={() => handlePhotoClick(imageUrl)}
+        />
+      ) : (
+        <span className="text-gray-400 italic text-xs">Kosong</span>
       );
     },
   },

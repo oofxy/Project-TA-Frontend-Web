@@ -5,12 +5,13 @@ import { DataMaster } from "@/types";
 // PATCH status-absensi
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { id } = context.params as { id: string }; 
   const axiosAuth = await createAxiosWithAuth();
   try {
     const body: Partial<DataMaster> = await req.json();
-    const res = await axiosAuth.patch(`status_absensi/${params.id}`, body);
+    const res = await axiosAuth.patch(`status_absensi/${id}`, body);
     return NextResponse.json(res.data);
   } catch (error: any) {
     console.error(
@@ -27,11 +28,12 @@ export async function PATCH(
 // DELETE status-absensi
 export async function DELETE(
   _: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { id } = context.params as { id: string }; 
   const axiosAuth = await createAxiosWithAuth();
   try {
-    const res = await axiosAuth.delete(`status_absensi/${params.id}`);
+    const res = await axiosAuth.delete(`status_absensi/${id}`);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(

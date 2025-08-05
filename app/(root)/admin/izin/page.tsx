@@ -23,7 +23,6 @@ export default function IzinPage() {
   const [loading, setLoading] = useState(false);
 
   const limit = 8;
-  const searchTerm = "";
 
   useEffect(() => {
     const fetchIzin = async () => {
@@ -49,9 +48,7 @@ export default function IzinPage() {
 
       const res = await fetch("/api/data/izin/verify", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, verification }),
       });
 
@@ -90,7 +87,9 @@ export default function IzinPage() {
               kepentingan={item.jenis_izin.name}
               tanggal={item.tanggal}
               terverifikasi={
-                item.terverivikasi === null ? "" : item.terverivikasi.toString()
+                item.terverivikasi === null
+                  ? "Pending"
+                  : item.terverivikasi.toString()
               }
             />
           </button>

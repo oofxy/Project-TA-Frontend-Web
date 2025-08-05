@@ -5,12 +5,13 @@ import { DataMaster } from "@/types";
 // PATCH jabatan
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { id } = context.params as { id: string }; 
   const axiosAuth = await createAxiosWithAuth();
   try {
     const body: Partial<DataMaster> = await req.json();
-    const res = await axiosAuth.patch(`jabatan/${params.id}`, body);
+    const res = await axiosAuth.patch(`jabatan/${id}`, body);
     return NextResponse.json(res.data);
   } catch (error: any) {
     console.error(
@@ -27,11 +28,12 @@ export async function PATCH(
 // DELETE jabatan
 export async function DELETE(
   _: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
+  const { id } = context.params as { id: string }; 
   const axiosAuth = await createAxiosWithAuth();
   try {
-    const res = await axiosAuth.delete(`jabatan/${params.id}`);
+    const res = await axiosAuth.delete(`jabatan/${id}`);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(

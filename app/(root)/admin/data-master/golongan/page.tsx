@@ -105,7 +105,7 @@ export default function GolonganPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit golongan" : "Tambah golongan"}
+              Tambah data golongan
             </Button>
           </DialogTrigger>
           <DialogContent>

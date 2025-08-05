@@ -105,7 +105,7 @@ export default function JenisIzinPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit jenis izin" : "Tambah jenis izin"}
+              Tambah data jenis izin
             </Button>
           </DialogTrigger>
           <DialogContent>

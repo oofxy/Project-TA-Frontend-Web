@@ -1,16 +1,14 @@
 import { createAxiosWithAuth } from "@/lib/axiosAuth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, context: any) {
   try {
+    const { id } = context.params as { id: string };
     const axios = await createAxiosWithAuth();
 
     const [karyawanRes, anakRes] = await Promise.all([
-      axios.get(`karyawan/${params.id}`),
-      axios.get(`anak/${params.id}`).catch((err) => {
+      axios.get(`karyawan/${id}`),
+      axios.get(`anak/${id}`).catch((err) => {
         if (err.response?.status === 404) return { data: [] };
         throw err;
       }),
@@ -33,15 +31,13 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request, context: any) {
   try {
+    const { id } = context.params as { id: string };
     const axios = await createAxiosWithAuth();
     const body = await req.json();
 
-    const res = await axios.patch(`karyawan/${params.id}`, body);
+    const res = await axios.patch(`karyawan/${id}`, body);
 
     return NextResponse.json({
       success: true,

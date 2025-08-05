@@ -3,14 +3,12 @@ import { createAxiosWithAuth } from "@/lib/axiosAuth";
 import { DataMaster } from "@/types";
 
 // PATCH pangkat
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, context: any) {
+  const { id } = context.params as { id: string };
   const axiosAuth = await createAxiosWithAuth();
   try {
     const body: Partial<DataMaster> = await req.json();
-    const res = await axiosAuth.patch(`pangkat/${params.id}`, body);
+    const res = await axiosAuth.patch(`pangkat/${id}`, body);
     return NextResponse.json(res.data);
   } catch (error: any) {
     console.error(
@@ -25,13 +23,11 @@ export async function PATCH(
 }
 
 // DELETE pangkat
-export async function DELETE(
-  _: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_: NextRequest, context: any) {
+  const { id } = context.params as { id: string };
   const axiosAuth = await createAxiosWithAuth();
   try {
-    const res = await axiosAuth.delete(`pangkat/${params.id}`);
+    const res = await axiosAuth.delete(`pangkat/${id}`);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(

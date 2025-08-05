@@ -103,7 +103,7 @@ export default function AgamaPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit Agama" : "Tambah Agama"}
+              Tambah data agama
             </Button>
           </DialogTrigger>
           <DialogContent>

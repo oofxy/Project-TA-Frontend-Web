@@ -1,14 +1,14 @@
 "use client";
 
 import { TableData } from "@/components/TableData";
-import { dataKaryawan } from "./columns";
+import { karyawan } from "./columns";
 import { DataKaryawan } from "@/types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Page() {
-  const [izinData, setIzinData] = useState<DataKaryawan[]>([]);
+  const [karyawanData, setKaryawanData] = useState<DataKaryawan[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Page() {
       try {
         const res = await fetch("/api/data/karyawan");
         const data = await res.json();
-        setIzinData(data);
+        setKaryawanData(data);
       } catch (error) {
         console.error("Gagal fetch karyawan data:", error);
         toast.error("Gagal mengambil data karyawan");
@@ -34,7 +34,7 @@ export default function Page() {
   ) : (
     <div className="flex flex-col h-full">
       <div className="w-full h-full bg-[#CDF9EF] rounded-3xl">
-        <TableData columns={dataKaryawan} data={izinData} />
+        <TableData columns={karyawan} data={karyawanData} />
       </div>
     </div>
   );

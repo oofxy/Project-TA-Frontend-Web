@@ -105,7 +105,7 @@ export default function PendidikanPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit pendidikan" : "Tambah pendidikan"}
+              Tambah data pendidikan
             </Button>
           </DialogTrigger>
           <DialogContent>

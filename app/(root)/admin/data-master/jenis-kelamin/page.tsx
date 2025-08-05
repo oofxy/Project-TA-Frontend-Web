@@ -107,7 +107,7 @@ export default function JenisKelaminPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit jenis kelamin" : "Tambah jenis kelamin"}
+              Tambah data jenis kelamin
             </Button>
           </DialogTrigger>
           <DialogContent>

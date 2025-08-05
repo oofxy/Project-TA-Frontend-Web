@@ -107,7 +107,7 @@ export default function LokasiKerjaPage() {
               }}
               className="bg-[#17876E]"
             >
-              {id ? "Edit lokasi kerja" : "Tambah lokasi kerja"}
+              Tambah data lokasi kerja
             </Button>
           </DialogTrigger>
           <DialogContent>

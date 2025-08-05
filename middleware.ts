@@ -4,9 +4,17 @@ import { NextRequest, NextResponse } from "next/server";
 const protectedRoutes = ["/admin"];
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  if (
+    !protectedRoutes.some((route) => pathname.startsWith(route)) &&
+    pathname !== "/login"
+  ) {
+    return NextResponse.next();
+  }
+
   const session = await auth();
   const isLoggedin = !!session?.user;
-  const { pathname } = req.nextUrl;
 
   if (
     !isLoggedin &&
@@ -15,7 +23,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (isLoggedin && pathname.startsWith("/login")) {
+  if (isLoggedin && pathname === "/login") {
     return NextResponse.redirect(new URL("/admin", req.url));
   }
 
@@ -24,5 +32,4 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-  // matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)", "/auth/:path*"],
 };

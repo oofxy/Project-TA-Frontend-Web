@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAxiosWithAuth } from "@/lib/axiosAuth";
 import axios from "axios";
 
 const endpoints = {
@@ -23,19 +22,17 @@ interface SelectOption {
   label: string;
 }
 
-export async function POST(req: NextRequest) {
-  console.log("🔥 SUBMIT FORM ROUTE CALLED");
+const axiosFetch = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
+export async function POST(req: NextRequest) {
   try {
     const form = await req.json();
     console.log("Received form:", form);
-    const axiosFetch = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
 
     const karyawanPayload = {
       name: form.nama,
@@ -71,22 +68,14 @@ export async function POST(req: NextRequest) {
     };
 
     let karyawanId;
-
     try {
-      console.log("🔥 API URL:", process.env.NEXT_PUBLIC_API_URL);
-      console.log(
-        "🛡️  API TOKEN:",
-        process.env.NEXT_PUBLIC_API_TOKEN?.slice(0, 10)
-      );
-      console.log("📦 PAYLOAD:", karyawanPayload);
       const res = await axiosFetch.post("karyawan", karyawanPayload);
-      console.log("Karyawan created:", res.data);
       karyawanId = res.data?.karyawan?.id;
     } catch (err: any) {
-      console.error("Gagal create karyawan:");
-      console.error("➡️ Full Error:", err);
-      console.error("➡️ Response:", err?.response?.data);
-      console.error("➡️ Status:", err?.response?.status);
+      console.error(
+        "Gagal create karyawan:",
+        err?.response?.data || err.message
+      );
       return NextResponse.json(
         { error: "Gagal menyimpan data karyawan ke server." },
         { status: 500 }
@@ -136,30 +125,31 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   const results: Partial<Record<EndpointKeys, SelectOption[]>> = {};
-  const axiosAuth = await createAxiosWithAuth();
 
   try {
     await Promise.all(
       Object.entries(endpoints).map(async ([key, endpoint]) => {
         try {
-          const res = await axiosAuth.get(endpoint);
-          const data = res.data;
-          results[key as EndpointKeys] = data.map((item: any) => ({
+          const res = await axiosFetch.get(endpoint);
+          const arr = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+          results[key as EndpointKeys] = arr.map((item: any) => ({
             value: item.id,
             label: item.name,
           }));
-        } catch (err) {
-          console.error(`Error fetching ${endpoint}:`, err);
+        } catch (err: any) {
+          console.error(
+            `Error fetching ${endpoint}:`,
+            err?.response?.data || err.message
+          );
           results[key as EndpointKeys] = [];
         }
       })
     );
 
     return NextResponse.json(results);
-  } catch (err) {
-    return NextResponse.json(
-      { error: "Failed to fetch select options" },
-      { status: 500 }
-    );
+  } catch (err: any) {
+    console.error("Fatal GET submit-form error:", err);
+    return NextResponse.json(results);
   }
 }
