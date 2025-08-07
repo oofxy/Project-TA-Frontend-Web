@@ -46,13 +46,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: "include",
           });
 
-          if (!res.ok) {
-            const errData = await res.json();
-            console.error("Login failed:", errData.message);
-            return null;
-          }
-
           const data = await res.json();
+
+          console.log("Login success response:", data);
 
           if (!res.ok || !data.access_token) {
             console.error("Login failed:", data.message || "No access token");
