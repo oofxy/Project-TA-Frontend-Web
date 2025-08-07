@@ -46,7 +46,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: "include",
           });
 
-          const data = await res.json();
+          const resClone = res.clone();
+          const data = await resClone.json();
 
           console.log("Login success response:", data);
 
