@@ -10,9 +10,9 @@ import { Form } from "@/components/ui/form";
 import { Loader2 } from "lucide-react";
 import { authFormSchema } from "@/lib/zod";
 import LoginInput from "@/components/LoginInput";
-import { credentialsSignin } from "@/app/actions/actions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [globalError, setGlobalError] = useState<{
@@ -32,13 +32,16 @@ export default function Login() {
   const onSubmit = async (values: z.infer<typeof authFormSchema>) => {
     setIsLoading(true);
     try {
-      const result = await credentialsSignin(values);
+      const result = await signIn("credentials", {
+        ...values,
+        redirect: false,
+      });
 
-      if (result?.message) {
-        setGlobalError({ message: result.message });
+      if (result?.error) {
+        setGlobalError({ message: result.error });
+      } else {
+        router.push("/admin");
       }
-
-      router.push("/admin");
     } catch (error) {
     } finally {
       setIsLoading(false);
