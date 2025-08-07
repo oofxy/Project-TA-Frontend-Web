@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: Request, context: any) {
   try {
-    const { id } = context.params as { id: string };
+    const { id } = (await context.params) as { id: string };
     const axios = await createAxiosWithAuth();
 
     const [karyawanRes, anakRes] = await Promise.all([
@@ -33,7 +33,7 @@ export async function GET(request: Request, context: any) {
 
 export async function PATCH(req: Request, context: any) {
   try {
-    const { id } = context.params as { id: string };
+    const { id } = (await context.params) as { id: string };
     const axios = await createAxiosWithAuth();
     const body = await req.json();
 
@@ -45,7 +45,14 @@ export async function PATCH(req: Request, context: any) {
       data: res.data,
     });
   } catch (error: any) {
-    console.error("Gagal update data karyawan:", error);
+    console.error("Gagal update data karyawan:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method,
+      body: error.config?.data,
+    });
 
     return NextResponse.json(
       {

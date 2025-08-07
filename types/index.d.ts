@@ -18,7 +18,10 @@ export type DataKaryawan = {
   tempat_lahir: string;
   tanggal_lahir: string;
   alamat: string;
-  kelurahan_id: string;
+  provinsi: string;
+  kabupaten: string;
+  kecamatan: string;
+  kelurahan: string;
   pendidikan_id: string;
   npwp: string;
   jenis_kelamin_id: string;
@@ -75,7 +78,7 @@ export type DataIzin = {
   keterangan: string;
   bukti_foto: string | null;
   tanggal: string;
-  terverivikasi: boolean | null;
+  terverifikasi: boolean | null;
 };
 
 export type DataRegisterUser = {

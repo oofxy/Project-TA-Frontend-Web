@@ -29,7 +29,10 @@ const defaultData = (id: string): DataKaryawan => ({
   agama_id: "",
   tempat_lahir: "",
   tanggal_lahir: "",
-  kelurahan_id: "",
+  provinsi: "",
+  kabupaten: "",
+  kecamatan: "",
+  kelurahan: "",
   pendidikan_id: "",
   npwp: "",
   jenis_kelamin_id: "",
@@ -64,12 +67,32 @@ export default function EditKaryawanPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Emsifa data
+  const [provinsiList, setProvinsiList] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [kabupatenList, setKabupatenList] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [kecamatanList, setKecamatanList] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [kelurahanList, setKelurahanList] = useState<
+    { id: string; name: string }[]
+  >([]);
+
+  const [karyawanData, setKaryawanData] = useState<DataKaryawan | null>(null);
+  const [childrenData, setChildrenData] = useState<DataAnak[]>([]);
+
+  // Fetch Karyawan & Options
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const karyawanRes = await fetch(`/api/data/karyawan/${id}`);
-        const optionsRes = await fetch("/api/data/select-options");
+        const [karyawanRes, optionsRes] = await Promise.all([
+          fetch(`/api/data/karyawan/${id}`),
+          fetch("/api/data/select-options"),
+        ]);
 
         const karyawanJson = await karyawanRes.json();
         const optionsJson = await optionsRes.json();
@@ -88,11 +111,9 @@ export default function EditKaryawanPage() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, router]);
 
-  const [karyawanData, setKaryawanData] = useState<DataKaryawan | null>(null);
-  const [childrenData, setChildrenData] = useState<DataAnak[]>([]);
-
+  // Inisialisasi data form
   useEffect(() => {
     if (karyawan) {
       setKaryawanData({ ...defaultData(id as string), ...karyawan });
@@ -100,8 +121,70 @@ export default function EditKaryawanPage() {
     }
   }, [karyawan, anak, id]);
 
+  // Fetch provinsi dari Emsifa
+  useEffect(() => {
+    fetch("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json")
+      .then((res) => res.json())
+      .then((data) =>
+        setProvinsiList(
+          data.map((d: any) => ({ id: d.id.toString(), name: d.name }))
+        )
+      );
+  }, []);
+
+  // Fetch kabupaten berdasarkan provinsi
+  useEffect(() => {
+    if (!karyawanData?.provinsi) return;
+    const prov = provinsiList.find((p) => p.name === karyawanData.provinsi);
+    if (!prov) return;
+
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${prov.id}.json`
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        setKabupatenList(
+          data.map((d: any) => ({ id: d.id.toString(), name: d.name }))
+        )
+      );
+  }, [karyawanData?.provinsi, provinsiList]);
+
+  // Fetch kecamatan
+  useEffect(() => {
+    if (!karyawanData?.kabupaten) return;
+    const kab = kabupatenList.find((k) => k.name === karyawanData.kabupaten);
+    if (!kab) return;
+
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kab.id}.json`
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        setKecamatanList(
+          data.map((d: any) => ({ id: d.id.toString(), name: d.name }))
+        )
+      );
+  }, [karyawanData?.kabupaten, kabupatenList]);
+
+  // Fetch kelurahan
+  useEffect(() => {
+    if (!karyawanData?.kecamatan) return;
+    const kec = kecamatanList.find((k) => k.name === karyawanData.kecamatan);
+    if (!kec) return;
+
+    fetch(
+      `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${kec.id}.json`
+    )
+      .then((res) => res.json())
+      .then((data) =>
+        setKelurahanList(
+          data.map((d: any) => ({ id: d.id.toString(), name: d.name }))
+        )
+      );
+  }, [karyawanData?.kecamatan, kecamatanList]);
+
   const handleChange = useCallback(
-    (name: keyof DataKaryawan, value: string) => {
+    (name: keyof DataKaryawan, value: any) => {
       if (!karyawanData) return;
       setKaryawanData((prev) => ({ ...prev!, [name]: value }));
     },
@@ -115,9 +198,7 @@ export default function EditKaryawanPage() {
     try {
       const res = await fetch(`/api/data/karyawan/${id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...karyawanData, anak: childrenData }),
       });
       if (!res.ok) throw new Error("Gagal update data");
@@ -146,40 +227,134 @@ export default function EditKaryawanPage() {
         >
           <h2 className="text-xl font-semibold mb-2">{title}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {fields.map(({ label, name, type, required }) => (
-              <div key={name} className="space-y-2">
-                <Label htmlFor={name}>
-                  {label}
-                  {required && <span className="text-red-500">*</span>}
-                </Label>
-                {type === "select" ? (
-                  <Select
-                    value={karyawanData[name]?.toString() || ""}
-                    onValueChange={(value) => handleChange(name, value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={`Pilih ${label}`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {options[name]?.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    id={name}
-                    type={type}
-                    value={karyawanData[name]?.toString() || ""}
-                    onChange={(e) => handleChange(name, e.target.value)}
-                    autoComplete="off"
-                    required={required}
-                  />
-                )}
-              </div>
-            ))}
+            {fields.map(({ label, name, type, required }) => {
+              if (name === "provinsi") {
+                return (
+                  <div key={name} className="space-y-2">
+                    <Label>{label}</Label>
+                    <Select
+                      value={karyawanData.provinsi || ""}
+                      onValueChange={(val) => handleChange("provinsi", val)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih Provinsi" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {provinsiList.map((p) => (
+                          <SelectItem key={p.id} value={p.name}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              }
+
+              if (name === "kabupaten") {
+                return (
+                  <div key={name} className="space-y-2">
+                    <Label>{label}</Label>
+                    <Select
+                      value={karyawanData.kabupaten || ""}
+                      onValueChange={(val) => handleChange("kabupaten", val)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih Kabupaten" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {kabupatenList.map((k) => (
+                          <SelectItem key={k.id} value={k.name}>
+                            {k.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              }
+
+              if (name === "kecamatan") {
+                return (
+                  <div key={name} className="space-y-2">
+                    <Label>{label}</Label>
+                    <Select
+                      value={karyawanData.kecamatan || ""}
+                      onValueChange={(val) => handleChange("kecamatan", val)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih Kecamatan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {kecamatanList.map((k) => (
+                          <SelectItem key={k.id} value={k.name}>
+                            {k.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              }
+
+              if (name === "kelurahan") {
+                return (
+                  <div key={name} className="space-y-2">
+                    <Label>{label}</Label>
+                    <Select
+                      value={karyawanData.kelurahan?.toString() || ""}
+                      onValueChange={(val) => handleChange("kelurahan", val)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih Kelurahan" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {kelurahanList.map((kel) => (
+                          <SelectItem key={kel.id} value={kel.name}>
+                            {kel.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={name} className="space-y-2">
+                  <Label htmlFor={name}>
+                    {label}
+                    {required && <span className="text-red-500">*</span>}
+                  </Label>
+                  {type === "select" ? (
+                    <Select
+                      value={karyawanData[name]?.toString() || ""}
+                      onValueChange={(value) => handleChange(name, value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={`Pilih ${label}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {options[name]?.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      id={name}
+                      type={type}
+                      value={karyawanData[name]?.toString() || ""}
+                      onChange={(e) => handleChange(name, e.target.value)}
+                      autoComplete="off"
+                      required={required}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       ))}

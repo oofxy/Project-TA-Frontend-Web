@@ -14,7 +14,10 @@ export async function PATCH(req: NextRequest) {
 
     const axios = await createAxiosWithAuth();
     console.log("Sending payload =>", { terverifikasi: verification });
-    await axios.patch(`izin/${id}/verify`, { terverifikasi: verification });
+    const resBackend = await axios.patch(`izin/${id}/verify`, {
+      terverifikasi: verification,
+    });
+    console.log("Backend response:", resBackend.data);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -6,29 +6,33 @@ import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const GenderChart = ({ gender }: DoughnutChartProps) => {
+export const GenderChart = ({ gender }: DoughnutChartProps) => {
   const data = {
     datasets: [
       {
         label: "Orang",
         data: gender,
-        backgroundColor: ["#0747b6", "#2265d8"],
+        backgroundColor: ["#0747b6", "#ff8282"],
       },
     ],
     labels: ["Pria", "Wanita"],
   };
 
   return (
-    <Doughnut
-      data={data}
-      options={{
-        cutout: "60%",
-        plugins: {
-          legend: { display: false },
-        },
-      }}
-    />
+    <div className="w-48 h-48">
+      <Doughnut
+        data={data}
+        options={{
+          cutout: "60%",
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom",
+            },
+          },
+          maintainAspectRatio: false,
+        }}
+      />
+    </div>
   );
 };
-
-export default GenderChart;

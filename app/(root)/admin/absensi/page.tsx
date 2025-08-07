@@ -69,9 +69,7 @@ export default function AbsensiPage() {
             ? formatTime(item.clock_out_time)
             : "--:--",
           status: item.status_absensi?.name || "",
-          bukti_foto: item.bukti_foto
-            ? `${process.env.NEXT_PUBLIC_PATH_URL}${item.bukti_foto}`
-            : null,
+          bukti_foto: `${process.env.NEXT_PUBLIC_PATH_URL}${item.bukti_foto}`,
         }));
 
         setData(mappedData);

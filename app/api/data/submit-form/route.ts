@@ -43,7 +43,10 @@ export async function POST(req: NextRequest) {
       tempat_lahir: form.tempat_lahir,
       tanggal_lahir: form.tanggal_lahir,
       alamat: form.alamat,
-      kelurahan_id: form.kelurahan_id,
+      provinsi: form.provinsi_nama,
+      kabupaten: form.kabupaten_nama,
+      kecamatan: form.kecamatan_nama,
+      kelurahan: form.kelurahan_nama,
       pendidikan_id: form.pendidikan_id,
       npwp: form.npwp,
       jenis_kelamin_id: form.jenis_kelamin_id,
@@ -66,6 +69,8 @@ export async function POST(req: NextRequest) {
       alamat_ibu: form.alamat_ibu,
       status_id: form.status_id,
     };
+
+    console.log("Karyawan payload:", karyawanPayload);
 
     let karyawanId;
     try {

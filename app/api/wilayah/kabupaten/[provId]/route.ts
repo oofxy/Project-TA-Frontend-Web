@@ -5,9 +5,9 @@ interface Params {
   params: { provId: string };
 }
 
-export async function GET(req: Request, { params }: Params) {
+export async function GET(req: Request, context: any) {
   try {
-    const { provId } = params;
+    const { provId } = (await context.params) as { provId: string };
     const res = await axios.get(
       `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provId}.json`
     );

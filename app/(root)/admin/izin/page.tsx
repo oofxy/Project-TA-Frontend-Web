@@ -29,8 +29,10 @@ export default function IzinPage() {
       setLoading(true);
       try {
         const res = await fetch("/api/data/izin");
-        const data = await res.json();
-        setIzinData(data);
+        const json = await res.json();
+
+        const pending = json.pending || [];
+        setIzinData(pending);
       } catch (error) {
         console.error("Gagal fetch izin data:", error);
         toast.error("Gagal mengambil data izin");
@@ -58,14 +60,21 @@ export default function IzinPage() {
       }
 
       toast.success("Izin berhasil diverifikasi");
+
+      setIzinData((prev) => prev.filter((item) => item.id !== id));
       setSelectedIzin(null);
+
+      setCurrentPage((prev) => {
+        const newTotalPages = Math.ceil((izinData.length - 1) / limit);
+        return prev > newTotalPages ? Math.max(newTotalPages, 1) : prev;
+      });
     } catch (error: any) {
       console.error("Gagal verifikasi:", error);
       toast.error(error.message || "Gagal memverifikasi izin");
     }
   };
 
-  const totalPages = Math.ceil(izinData.length / limit);
+  const totalPages = Math.ceil(izinData.length / limit) || 1;
   const paginated = izinData.slice(
     (currentPage - 1) * limit,
     currentPage * limit
@@ -87,13 +96,21 @@ export default function IzinPage() {
               kepentingan={item.jenis_izin.name}
               tanggal={item.tanggal}
               terverifikasi={
-                item.terverivikasi === null
+                item.terverifikasi === null
                   ? "Pending"
-                  : item.terverivikasi.toString()
+                  : item.terverifikasi?.toString() ?? "-"
               }
             />
           </button>
         ))}
+
+        {paginated.length === 0 && (
+          <div className="items-center p-5 bg-white rounded-lg cursor-pointer">
+            <p className="text-center text-black ">
+              Semua izin sudah diverifikasi
+            </p>
+          </div>
+        )}
       </div>
 
       <CustomPaginationLite

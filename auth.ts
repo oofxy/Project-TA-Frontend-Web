@@ -39,12 +39,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = parsedCredentials.data;
 
         try {
+          console.log("Email:", email);
+          console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+          console.log("Trying to login...");
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
             credentials: "include",
           });
+
+          console.log("Response status:", res.status);
+          console.log("Response body:", await res.text());
 
           const data = await res.json();
 
