@@ -39,9 +39,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = parsedCredentials.data;
 
         try {
-          console.log("Email:", email);
-          console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-          console.log("Trying to login...");
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -49,8 +46,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: "include",
           });
 
-          console.log("Response status:", res.status);
-          console.log("Response body:", await res.text());
+          if (!res.ok) {
+            const errData = await res.json();
+            console.error("Login failed:", errData.message);
+            return null;
+          }
 
           const data = await res.json();
 
@@ -68,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         } catch (e) {
           console.error("Login error caught:", e);
-          throw new CustomAuthError("Internal Server Error");
+          return null;
         }
       },
     }),
