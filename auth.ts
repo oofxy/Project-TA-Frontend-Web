@@ -26,45 +26,73 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       authorize: async (credentials) => {
-        const parsedCredentials = authFormSchema.safeParse(credentials);
-
-        if (!parsedCredentials.success) {
-          console.log(
-            "Zod validation failed:",
-            parsedCredentials.error.format()
-          );
+        const parsed = authFormSchema.safeParse(credentials);
+        if (!parsed.success) {
+          console.log("Zod validation failed:", parsed.error.format());
           return null;
         }
+        const { email, password } = parsed.data;
 
-        const { email, password } = parsedCredentials.data;
+        type LoginResponse = {
+          access_token?: string;
+          refresh_token?: string;
+          user_id?: string | number;
+          name?: string;
+          message?: string;
+        };
+
+        const isLoginResponse = (obj: unknown): obj is LoginResponse => {
+          return typeof obj === "object" && obj !== null;
+        };
 
         try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
-            credentials: "include",
+            // credentials: "include", // comment dulu kecuali kamu butuh cookie
           });
 
-          const resClone = res.clone();
-          const data = await resClone.json();
+          const text = await res.text();
+          let parsedJson: unknown;
+          try {
+            parsedJson = text ? JSON.parse(text) : {};
+          } catch (err) {
+            console.error("Auth API returned non-JSON response:", text);
+            parsedJson = { message: text };
+          }
 
-          console.log("Login success response:", data);
+          if (!isLoginResponse(parsedJson)) {
+            console.error("Unexpected auth API response shape:", parsedJson);
+            return null;
+          }
 
-          if (!res.ok || !data.access_token) {
-            console.error("Login failed:", data.message || "No access token");
+          const data = parsedJson as LoginResponse;
+
+          console.log("Auth API status:", res.status, "body:", data);
+
+          if (!res.ok) {
+            console.error(
+              "Login failed:",
+              data.message ?? `status ${res.status}`
+            );
+            return null;
+          }
+
+          if (!data.access_token) {
+            console.error("Login succeeded but no access_token present:", data);
             return null;
           }
 
           return {
-            id: data.user_id,
-            name: data.name,
+            id: String(data.user_id ?? ""),
+            name: data.name ?? "",
             email,
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
           };
-        } catch (e) {
-          console.error("Login error caught:", e);
+        } catch (err) {
+          console.error("Login error caught:", err);
           return null;
         }
       },
